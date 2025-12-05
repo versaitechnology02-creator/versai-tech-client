@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function VerifyOTP() {
+function VerifyOTPContent() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -73,5 +73,19 @@ export default function VerifyOTP() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function VerifyOTP() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center bg-background text-foreground">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </main>
+      }
+    >
+      <VerifyOTPContent />
+    </Suspense>
   );
 }
