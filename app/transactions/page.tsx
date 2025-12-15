@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Loader2, Search } from "lucide-react"
+import { getApiBaseUrl } from "@/lib/api"
 
 interface Transaction {
   id: string
@@ -28,7 +29,7 @@ export default function TransactionsPage() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/transactions`)
+      const res = await fetch(`${getApiBaseUrl()}/api/payments/transactions`)
       const data = await res.json()
       if (data.success) {
         setTransactions(data.data)

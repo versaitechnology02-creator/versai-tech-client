@@ -25,14 +25,14 @@ export default function AdminSidebar({ selectedSection, setSelectedSection, user
         <nav className="flex flex-col gap-2">
           <button
             onClick={() => setSelectedSection("overview")}
-            className={`text-left px-3 py-2 rounded flex items-center gap-3 ${selectedSection === "overview" ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}>
+            className={`text-left px-3 py-2 rounded flex items-center gap-3 ${selectedSection === "overview" ? "bg-primary text-white font-semibold" : "hover:bg-muted"}`}>
             <Home size={16} />
             <span>Overview</span>
           </button>
 
           <button
             onClick={() => setSelectedSection("transactions")}
-            className={`text-left px-3 py-2 rounded flex items-center justify-between ${selectedSection === "transactions" ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}>
+            className={`text-left px-3 py-2 rounded flex items-center justify-between ${selectedSection === "transactions" ? "bg-primary text-white font-semibold" : "hover:bg-muted"}`}>
             <div className="flex items-center gap-3">
               <FileText size={16} />
               <span>Transactions</span>
@@ -42,7 +42,7 @@ export default function AdminSidebar({ selectedSection, setSelectedSection, user
 
           <button
             onClick={() => setSelectedSection("users")}
-            className={`text-left px-3 py-2 rounded flex items-center justify-between ${selectedSection === "users" ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}>
+            className={`text-left px-3 py-2 rounded flex items-center justify-between ${selectedSection === "users" ? "bg-primary text-white font-semibold" : "hover:bg-muted"}`}>
             <div className="flex items-center gap-3">
               <Users size={16} />
               <span>Users</span>

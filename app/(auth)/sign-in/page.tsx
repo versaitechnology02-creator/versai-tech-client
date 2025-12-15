@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Mail, Loader2, Lock } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
+import { getApiBaseUrl } from "@/lib/api"
 
 export default function SignIn() {
   const router = useRouter()
@@ -17,7 +18,7 @@ export default function SignIn() {
     setLoading(true)
 
     try {
-      const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"
+      const base = getApiBaseUrl()
       const res = await fetch(`${base}/api/auth/sign-in`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

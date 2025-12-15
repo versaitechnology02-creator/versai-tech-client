@@ -7,10 +7,10 @@ const AboutUs = () => {
         
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-block bg-orange-100 text-orange-600 px-6 py-2 rounded-full text-sm font-semibold mb-4">
+          <div className="inline-block bg-primary/10 text-primary px-6 py-2 rounded-full text-sm font-semibold mb-4">
             About Versai Technologies
           </div>
-          <h1 className="text-5xl font-bold text-orange-600 mb-4">
+          <h1 className="text-5xl font-bold text-primary mb-4">
             Empowering Business Payments
           </h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto">
@@ -27,12 +27,12 @@ const AboutUs = () => {
             
             {/* Step 1 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                   1
                 </div>
                 <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
-                  <svg className="w-12 h-12 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-12 h-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                 </div>
@@ -43,12 +43,12 @@ const AboutUs = () => {
 
             {/* Step 2 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+              <div className="bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-secondary text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                   2
                 </div>
                 <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
-                  <svg className="w-12 h-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-12 h-12 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
                 </div>
@@ -59,12 +59,12 @@ const AboutUs = () => {
 
             {/* Step 3 */}
             <div className="relative group">
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+              <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-3xl p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-accent text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                   3
                 </div>
                 <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
-                  <svg className="w-12 h-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-12 h-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -88,9 +88,9 @@ const AboutUs = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* Feature 1 */}
-            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-orange-500 hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-orange-500 transition-all duration-300">
-                <svg className="w-8 h-8 text-orange-500 group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-primary hover:shadow-xl transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary transition-all duration-300">
+                <svg className="w-8 h-8 text-primary group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
               </div>
@@ -99,9 +99,9 @@ const AboutUs = () => {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-orange-500 hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-500 transition-all duration-300">
-                <svg className="w-8 h-8 text-blue-500 group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-secondary hover:shadow-xl transition-all duration-300 group">
+              <div className="w-16 h-16 bg-secondary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-secondary transition-all duration-300">
+                <svg className="w-8 h-8 text-secondary group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
@@ -110,9 +110,9 @@ const AboutUs = () => {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-orange-500 hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-green-500 transition-all duration-300">
-                <svg className="w-8 h-8 text-green-500 group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-accent hover:shadow-xl transition-all duration-300 group">
+              <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent transition-all duration-300">
+                <svg className="w-8 h-8 text-accent group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
@@ -121,9 +121,9 @@ const AboutUs = () => {
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-orange-500 hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-purple-500 transition-all duration-300">
-                <svg className="w-8 h-8 text-purple-500 group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-primary hover:shadow-xl transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary transition-all duration-300">
+                <svg className="w-8 h-8 text-primary group-hover:text-white transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>

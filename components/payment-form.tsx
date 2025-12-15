@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { AlertCircle } from "lucide-react"
+import { getApiBaseUrl } from "@/lib/api"
 
 interface PaymentFormProps {
   onSuccess: (orderId: string) => void
@@ -39,6 +40,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
     setLoading(true)
 
     try {
+      const apiBase = getApiBaseUrl()
       // Validate form
       if (!formData.name || !formData.email || !formData.amount) {
         throw new Error("Please fill in all required fields")
@@ -49,7 +51,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
       }
 
       // Create order
-      const orderRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/create-order`, {
+      const orderRes = await fetch(`${apiBase}/api/payments/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -87,7 +89,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
           handler: async (response: any) => {
             try {
               // Verify payment
-              const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/verify-payment`, {
+              const verifyRes = await fetch(`${apiBase}/api/payments/verify-payment`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(response),
@@ -185,7 +187,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition"
+          className="w-full bg-brand-gradient hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition shadow-md"
         >
           {loading ? "Processing..." : "Pay Now"}
         </button>

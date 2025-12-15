@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { AlertCircle, CheckCircle, Copy } from "lucide-react"
+import { getApiBaseUrl, getClientBaseUrl } from "@/lib/api"
 
 export default function PayInPage() {
   const router = useRouter()
@@ -32,7 +33,10 @@ export default function PayInPage() {
     setStatus("idle")
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/create-order`, {
+      const apiBase = getApiBaseUrl()
+      const clientUrl = getClientBaseUrl()
+
+      const res = await fetch(`${apiBase}/api/payments/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -48,7 +52,6 @@ export default function PayInPage() {
 
       const data = await res.json()
       if (data.success) {
-        const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
         const paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}`
         setGeneratedLink(paymentLink)
         setStatus("success")
