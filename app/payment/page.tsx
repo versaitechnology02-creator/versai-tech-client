@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter } from "next/navigation"
 import PaymentForm from "@/components/payment-form"
 import { AlertCircle, CheckCircle } from "lucide-react"
@@ -63,7 +63,9 @@ export default function PaymentPage() {
         )}
 
         {/* Payment Form */}
-        <PaymentForm onSuccess={handlePaymentSuccess} onError={handlePaymentError} />
+        <Suspense fallback={<div className="text-center p-8">Loading payment form...</div>}>
+          <PaymentForm onSuccess={handlePaymentSuccess} onError={handlePaymentError} />
+        </Suspense>
       </div>
     </main>
   )
