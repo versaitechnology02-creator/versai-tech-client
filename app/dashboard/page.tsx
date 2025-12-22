@@ -39,7 +39,7 @@ export default function DashboardPage() {
   if (token) {
     const loadUser = async () => {
       try {
-        const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+        const base = process.env.NEXT_PUBLIC_SERVER_URL;
         const res = await fetch(`${base}/api/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });

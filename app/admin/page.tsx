@@ -51,7 +51,7 @@ export default function AdminPage() {
 
     async function checkAdmin() {
       try {
-        const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"
+        const base = process.env.NEXT_PUBLIC_SERVER_URL
         const res = await fetch(`${base}/api/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -86,7 +86,7 @@ export default function AdminPage() {
       setLoadingTxns(true)
 
       try {
-        const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"
+        const base = process.env.NEXT_PUBLIC_SERVER_URL
 
         const [usersRes, txRes, overviewRes] = await Promise.all([
           fetch(`${base}/api/admin/users?page=1&limit=50`, {
@@ -136,7 +136,7 @@ export default function AdminPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"}/api/admin/users/${userId}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/admin/users/${userId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -158,7 +158,7 @@ export default function AdminPage() {
   async function exportCSV() {
     const token = localStorage.getItem("token")
     if (!token) return
-    const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"
+    const base = process.env.NEXT_PUBLIC_SERVER_URL
     const url = `${base}/api/admin/transactions-export?q=${search}&status=${statusFilter}&dateFrom=${dateFrom}&dateTo=${dateTo}`
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
     const blob = await res.blob()

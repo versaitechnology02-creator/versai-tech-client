@@ -12,7 +12,7 @@ export default function TransactionModal({ id, onClose, onUpdated }: { id: strin
     let mounted = true
     setLoading(true)
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+    const base = process.env.NEXT_PUBLIC_API_URL
     fetch(`${base}/api/admin/transactions/${id}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((d) => {
@@ -32,7 +32,7 @@ export default function TransactionModal({ id, onClose, onUpdated }: { id: strin
   async function refund() {
     if (!tx?.paymentId) return alert("No payment ID to refund")
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+    const base = process.env.NEXT_PUBLIC_API_URL
     try {
       setProcessing(true)
       const res = await fetch(`${base}/api/payments/refund`, {

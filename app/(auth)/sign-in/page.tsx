@@ -17,7 +17,7 @@ export default function SignIn() {
     setLoading(true)
 
     try {
-      const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"
+      const base = process.env.NEXT_PUBLIC_SERVER_URL
       const res = await fetch(`${base}/api/auth/sign-in`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
