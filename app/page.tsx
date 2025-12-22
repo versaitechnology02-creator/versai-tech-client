@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 backdrop-blur-sm bg-white/90 border-b border-primary/20 shadow-sm">
+      <nav className="sticky top-0 z-50 bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <a href="/" className="flex items-center gap-3">
               <img src="/logo-white.png" alt="Versai Technologies" className="h-8 w-auto" />
@@ -18,7 +18,7 @@ export default function Home() {
          
           <div className="flex gap-4 items-center">
            
-            <Link href="/sign-in" className="bg-brand-gradient hover:opacity-90 text-white px-6 py-2 rounded-lg transition shadow-md">
+            <Link href="/sign-in" className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded transition">
               Get Started
             </Link>
           </div>
@@ -29,7 +29,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h1 className="text-5xl font-bold mb-6 text-balance text-brand-gradient">Secure Payment Gateway Middleware</h1>
+            <h1 className="text-5xl font-bold mb-6 text-balance">Secure Payment Gateway Middleware</h1>
             <p className="text-xl text-muted-foreground mb-8">
               Versai Technologies acts as a trusted middleman between your application and Razorpay, providing a seamless payment
               experience with enterprise-grade security.
@@ -37,19 +37,19 @@ export default function Home() {
             <div className="flex gap-4">
               <Link
                 href="/payment"
-                className="bg-brand-gradient hover:opacity-90 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition shadow-lg"
+                className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
               >
                 Start Payment <ArrowRight size={20} />
               </Link>
               <Link
                 href="/dashboard"
-                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-lg font-semibold transition shadow-md"
+                className="border border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-lg font-semibold transition"
               >
                 View Dashboard
               </Link>
             </div>
           </div>
-          <div className="bg-card border border-primary/20 rounded-lg p-8 backdrop-blur-sm shadow-xl">
+          <div className="bg-card border border-border rounded-lg p-8 text-center">
             <div className="text-6xl font-bold text-primary mb-4">∞</div>
             <p className="text-muted-foreground">Unlimited transaction capacity</p>
           </div>

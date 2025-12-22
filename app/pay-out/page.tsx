@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { AlertCircle, CheckCircle } from "lucide-react"
-import { getApiBaseUrl } from "@/lib/api"
 
 export default function PayOutPage() {
   const [formData, setFormData] = useState({
@@ -32,11 +31,10 @@ export default function PayOutPage() {
     setStatus("idle")
 
     try {
-      const apiBase = getApiBaseUrl()
       const endpoint =
         formData.payment_method === "upi"
-          ? `${apiBase}/api/payments/payout-upi`
-          : `${apiBase}/api/payments/payout`
+          ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/payout-upi`
+          : `${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/payout`
 
       const res = await fetch(endpoint, {
         method: "POST",

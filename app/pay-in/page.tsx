@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { AlertCircle, CheckCircle, Copy } from "lucide-react"
-import { getApiBaseUrl, getClientBaseUrl } from "@/lib/api"
+import QRCode from "react-qr-code"
 
 export default function PayInPage() {
   const router = useRouter()
@@ -15,6 +15,7 @@ export default function PayInPage() {
     customer_email: "",
     description: "Versai Technologies",
   })
+  const [provider, setProvider] = useState<"razorpay" | "smepay" | "unpay" | "">("")
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
   const [message, setMessage] = useState("")
@@ -33,10 +34,15 @@ export default function PayInPage() {
     setStatus("idle")
 
     try {
-      const apiBase = getApiBaseUrl()
-      const clientUrl = getClientBaseUrl()
+      // Ensure a provider is selected before creating the link
+      if (!provider) {
+        setLoading(false)
+        setStatus("error")
+        setMessage("Please select a payment provider (Razorpay, Smepay, or Unpay)")
+        return
+      }
 
-      const res = await fetch(`${apiBase}/api/payments/create-order`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -52,7 +58,8 @@ export default function PayInPage() {
 
       const data = await res.json()
       if (data.success) {
-        const paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}`
+        const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
+        const paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
         setGeneratedLink(paymentLink)
         setStatus("success")
         setMessage("Payment link created successfully!")
@@ -127,6 +134,34 @@ export default function PayInPage() {
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Payment Provider</label>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setProvider("razorpay")}
+                  className={`px-4 py-2 rounded-lg border ${provider === "razorpay" ? "border-primary text-primary" : "border-border"}`}
+                >
+                  Razorpay
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProvider("smepay")}
+                  className={`px-4 py-2 rounded-lg border ${provider === "smepay" ? "border-primary text-primary" : "border-border"}`}
+                >
+                  Smepay
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProvider("unpay")}
+                  className={`px-4 py-2 rounded-lg border ${provider === "unpay" ? "border-primary text-primary" : "border-border"}`}
+                >
+                  Unpay
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Please choose one provider before creating the link.</p>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -150,6 +185,12 @@ export default function PayInPage() {
                 <p className="text-muted-foreground">Share this link with your customer:</p>
                 <div className="bg-background border border-border rounded-lg p-4 break-all text-sm">
                   {generatedLink}
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-sm text-muted-foreground">Scan to pay via {provider.toUpperCase()}</p>
+                  <div className="bg-white p-4 rounded-md inline-block">
+                    <QRCode value={generatedLink} size={160} />
+                  </div>
                 </div>
                 <button
                   onClick={() => {

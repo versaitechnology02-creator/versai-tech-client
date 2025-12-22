@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Loader2 } from "lucide-react"
-import { getApiBaseUrl } from "@/lib/api"
 
 export default function SettlementPage() {
   const [settlements, setSettlements] = useState<any[]>([])
@@ -14,7 +13,7 @@ export default function SettlementPage() {
 
   const fetchSettlements = async () => {
     try {
-      const res = await fetch(`${getApiBaseUrl()}/api/payments/settlements`)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/settlements`)
       const data = await res.json()
       if (data.success) {
         setSettlements(data.data || [])

@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Download, FileJson, FileText } from "lucide-react"
-import { getApiBaseUrl } from "@/lib/api"
 
 export default function ExportPage() {
   const [loading, setLoading] = useState(false)
@@ -10,7 +9,7 @@ export default function ExportPage() {
   const handleExport = async (format: "json" | "csv") => {
     setLoading(true)
     try {
-      const res = await fetch(`${getApiBaseUrl()}/api/payments/transactions`)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/transactions`)
       const data = await res.json()
 
       if (data.success) {

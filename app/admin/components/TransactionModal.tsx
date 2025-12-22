@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { getApiBaseUrl } from "@/lib/api"
 
 export default function TransactionModal({ id, onClose, onUpdated }: { id: string | null; onClose: () => void; onUpdated?: () => void }) {
   const [tx, setTx] = useState<any>(null)
@@ -13,7 +12,7 @@ export default function TransactionModal({ id, onClose, onUpdated }: { id: strin
     let mounted = true
     setLoading(true)
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
-    const base = getApiBaseUrl()
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
     fetch(`${base}/api/admin/transactions/${id}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((d) => {
@@ -33,7 +32,7 @@ export default function TransactionModal({ id, onClose, onUpdated }: { id: strin
   async function refund() {
     if (!tx?.paymentId) return alert("No payment ID to refund")
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
-    const base = getApiBaseUrl()
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
     try {
       setProcessing(true)
       const res = await fetch(`${base}/api/payments/refund`, {

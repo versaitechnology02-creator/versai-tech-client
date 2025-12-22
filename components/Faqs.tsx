@@ -42,7 +42,7 @@ const FAQ = () => {
         
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-block bg-primary/10 text-primary px-6 py-2 rounded-full text-sm font-semibold mb-4">
+          <div className="inline-block bg-orange-100 text-orange-600 px-6 py-2 rounded-full text-sm font-semibold mb-4">
             📌 FAQS
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -60,7 +60,7 @@ const FAQ = () => {
               key={index}
               className={`bg-white rounded-2xl shadow-md transition-all duration-300 overflow-hidden border-2 ${
                 activeIndex === index 
-                  ? 'border-primary shadow-lg' 
+                  ? 'border-orange-500 shadow-lg' 
                   : 'border-transparent hover:border-gray-200'
               }`}
             >
@@ -70,7 +70,7 @@ const FAQ = () => {
                 className="w-full text-left p-6 flex items-center justify-between group"
               >
                 <span className={`text-lg font-semibold transition-colors duration-300 pr-4 ${
-                  activeIndex === index ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
+                  activeIndex === index ? 'text-orange-600' : 'text-gray-900 group-hover:text-orange-600'
                 }`}>
                   {item.q}
                 </span>
@@ -78,8 +78,8 @@ const FAQ = () => {
                 {/* Icon */}
                 <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   activeIndex === index 
-                    ? 'bg-primary text-white rotate-180' 
-                    : 'bg-gray-100 text-gray-600 group-hover:bg-primary/10 group-hover:text-primary'
+                    ? 'bg-orange-500 text-white rotate-180' 
+                    : 'bg-gray-100 text-gray-600 group-hover:bg-orange-100 group-hover:text-orange-600'
                 }`}>
                   {activeIndex === index ? (
                     <FaMinus className="w-5 h-5" />
@@ -110,7 +110,7 @@ const FAQ = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-16 text-center bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-8">
+        <div className="mt-16 text-center bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-8">
           <h3 className="text-2xl font-bold text-gray-900 mb-3">
             Still have questions?
           </h3>
@@ -118,7 +118,7 @@ const FAQ = () => {
             Our support team is here to help you 24/7
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-brand-gradient hover:opacity-90 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+            <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
               Contact Support
             </button>
             <button className="bg-white hover:bg-gray-50 text-gray-900 font-semibold px-8 py-3 rounded-lg border-2 border-gray-200 transition-all duration-300">

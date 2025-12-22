@@ -5,7 +5,6 @@ import TransactionList from "@/components/transaction-list"
 import DashboardStats from "@/components/dashboard-stats"
 import { Loader2, Plus } from "lucide-react"
 import Link from "next/link"
-import { getApiBaseUrl } from "@/lib/api"
 
 interface Transaction {
   id: string
@@ -40,7 +39,7 @@ export default function DashboardPage() {
   if (token) {
     const loadUser = async () => {
       try {
-        const base = getApiBaseUrl();
+        const base = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
         const res = await fetch(`${base}/api/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -61,7 +60,7 @@ export default function DashboardPage() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`${getApiBaseUrl()}/api/payments/transactions`)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/transactions`)
       const data = await res.json()
       if (data.success) {
         setTransactions(data.data)
