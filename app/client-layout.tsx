@@ -13,15 +13,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     const token = localStorage.getItem("token")
     const isAuthPage = pathname?.includes("/sign-in") || pathname?.includes("/sign-up")
-    const isHomePage = pathname === "/" || pathname === ""
 
-    // If no token, only redirect to sign-in when the user tries to access
-    // protected routes; allow the public home page to be visible.
-    if (!token && !isAuthPage && !isHomePage) {
+    if (!token && !isAuthPage) {
       router.push("/sign-in")
     }
 
-    if (token && isAuthPage) {
+    if (token && (isAuthPage || pathname === "/")) {
       router.push("/dashboard")
     }
   }, [pathname, router])
