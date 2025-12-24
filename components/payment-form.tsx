@@ -393,7 +393,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition"
+          className="w-full btn-gradient disabled:opacity-50 disabled:cursor-not-allowed font-semibold py-3 rounded-lg transition"
         >
           {loading ? "Processing..." : "Pay Now"}
         </button>

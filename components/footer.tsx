@@ -12,21 +12,21 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-white text-black pt-16 pb-8">
+    <footer className="bg-card text-foreground pt-16 pb-8">
       <div className="container mx-auto px-6 lg:px-12">
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-12">
           
           {/* QUICK LINKS */}
           <div className="lg:col-span-3">
-            <h5 className="text-black text-xl font-bold mb-6 border-b-4 border-orange-500 inline-block pb-1">
+            <h5 className="text-foreground text-xl font-bold mb-6 border-b-4 border-primary inline-block pb-1">
               Quick Links
             </h5>
             <ul className="space-y-3 mt-6">
               <li>
                 <button 
                   onClick={() => handleScroll('about')} 
-                  className="text-gray-700 hover:text-orange-500 transition-colors duration-300 text-base"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300 text-base"
                 >
                   About Us
                 </button>

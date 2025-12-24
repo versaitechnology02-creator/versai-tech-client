@@ -150,7 +150,7 @@ export default function PayOutPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg font-semibold transition disabled:opacity-50"
+              className="w-full btn-gradient py-2 rounded-lg font-semibold transition disabled:opacity-50"
             >
               {loading ? "Processing..." : "Initiate Payout"}
             </button>

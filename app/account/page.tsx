@@ -114,7 +114,7 @@ export default function AccountPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 px-6 py-3 bg-primary text-white rounded-lg flex items-center gap-2"
+            className="mt-6 px-6 py-3 btn-gradient rounded-lg flex items-center gap-2"
           >
             <Save size={18} />
             {loading ? "Saving..." : "Save Changes"}

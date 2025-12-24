@@ -264,14 +264,14 @@ export default function AdminPage() {
 
               <button
                 onClick={exportCSV}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+                className="btn-gradient px-4 py-2 rounded-lg transition"
               >
                 Export CSV
               </button>
 
               <Link
                 href="/pay-in"
-                className="bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                className="btn-gradient px-4 py-2 rounded-lg flex items-center gap-2 transition"
               >
                 <Plus size={18} />
                 New Payment
@@ -327,7 +327,7 @@ export default function AdminPage() {
                             <td className="p-3">
                               <button
                                 onClick={() => toggleAdmin(u._id, !u.isAdmin)}
-                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isAdmin ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
+                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isAdmin ? "bg-red-500 hover:bg-red-600" : "btn-gradient"
                                   }`}
                               >
                                 {u.isAdmin ? "Remove Admin" : "Make Admin"}

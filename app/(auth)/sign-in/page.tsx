@@ -78,7 +78,7 @@ export default function SignIn() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary glow-gradient"
               />
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function SignIn() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
-                className="w-full bg-background border border-border rounded-lg pl-10 pr-2 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                className="w-full bg-background border border-border rounded-lg pl-10 pr-2 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary glow-gradient"
               />
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function SignIn() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary-dark disabled:bg-primary/50 text-white font-semibold py-2 rounded-lg transition flex items-center justify-center gap-2"
+            className="w-full btn-gradient disabled:opacity-50 font-semibold py-2 rounded-lg transition flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -118,7 +118,7 @@ export default function SignIn() {
 
         <p className="text-center text-muted-foreground text-sm mt-6">
           Don't have an account?{" "}
-          <Link href="/sign-up" className="text-primary hover:underline font-semibold">
+          <Link href="/sign-up" className="text-primary hover:text-gradient font-semibold">
             Sign Up
           </Link>
         </p>

@@ -73,7 +73,7 @@ export default function ExportPage() {
           <button
             onClick={() => handleExport("json")}
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
+            className="w-full btn-gradient py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
           >
             <Download size={20} />
             Download JSON
@@ -89,7 +89,7 @@ export default function ExportPage() {
           <button
             onClick={() => handleExport("csv")}
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
+            className="w-full btn-gradient py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
           >
             <Download size={20} />
             Download CSV

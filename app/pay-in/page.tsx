@@ -165,7 +165,7 @@ export default function PayInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg font-semibold transition disabled:opacity-50"
+              className="w-full btn-gradient py-2 rounded-lg font-semibold transition disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create Payment Link"}
             </button>
@@ -197,7 +197,7 @@ export default function PayInPage() {
                     navigator.clipboard.writeText(generatedLink)
                     setMessage("Link copied to clipboard!")
                   }}
-                  className="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
+                  className="w-full btn-gradient py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
                 >
                   <Copy size={20} />
                   Copy Link

@@ -64,7 +64,7 @@ export default function SignUp() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary glow-gradient"
                 />
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function SignUp() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary glow-gradient"
                 />
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function SignUp() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create a password"
-                  className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary glow-gradient"
                 />
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-primary-dark disabled:bg-primary/50 text-white font-semibold py-2 rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full btn-gradient disabled:opacity-50 font-semibold py-2 rounded-lg transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -120,7 +120,7 @@ export default function SignUp() {
 
           <p className="text-center text-muted-foreground text-sm mt-6">
             Already have an account?{" "}
-            <Link href="/sign-in" className="text-primary hover:underline font-semibold">
+            <Link href="/sign-in" className="text-primary hover:text-gradient font-semibold">
               Sign In
             </Link>
           </p>

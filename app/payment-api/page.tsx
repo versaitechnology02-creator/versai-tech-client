@@ -84,7 +84,7 @@ export default function PaymentAPIPage() {
           <button
             type="submit"
             disabled={loading || !newKeyName.trim()}
-            className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-semibold transition disabled:opacity-50"
+            className="btn-gradient px-6 py-2 rounded-lg font-semibold transition disabled:opacity-50"
           >
             {loading ? "Generating..." : "Generate Key"}
           </button>

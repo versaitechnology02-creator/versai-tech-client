@@ -92,7 +92,7 @@ export default function DashboardPage() {
 
           <Link
             href="/pay-in"
-            className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition"
+            className="btn-gradient px-6 py-2 rounded-lg flex items-center gap-2 transition"
           >
             <Plus size={20} />
             New Payment
