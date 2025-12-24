@@ -29,10 +29,10 @@ export default function AuthLayout({ children }) {
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#DC24E9] via-[#AA55FE] to-[#1DE2FF] p-16 items-center justify-center">
           <div className="max-w-lg space-y-6 text-white">
             <h1 className="text-5xl font-bold leading-tight">
-              Keep 100% of Your Earnings with 0% UPI Commission
+              Smart IT Solutions to Drive Your Tech Success
             </h1>
             <p className="text-xl text-white/90">
-              Join thousands of businesses choosing us to simplify payments—with no hidden cuts.
+              Versai Technology has been delivering top-notch services for over a decade, building a strong track record in the industry and consistently exceeding client expectations with innovative solutions.
             </p>
           </div>
         </div>

@@ -4,8 +4,8 @@ import "./globals.css"
 import ClientLayout from "./client-layout"
 
 export const metadata: Metadata = {
-  title: "Versai Technologies - Payment Gateway",
-  description: "Simple and secure payment gateway middleware powered by Razorpay",
+  title: "Versai Technologies - Simplifying IT for Peak Productivity",
+  description: "Simplifying IT for Peak Productivity",
 }
 
 export default function RootLayout({
