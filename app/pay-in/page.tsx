@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { AlertCircle, CheckCircle, Copy } from "lucide-react"
 import QRCode from "react-qr-code"
@@ -20,6 +20,33 @@ export default function PayInPage() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
   const [message, setMessage] = useState("")
   const [generatedLink, setGeneratedLink] = useState("")
+  const [isVerified, setIsVerified] = useState<boolean | null>(null)
+
+  // Check user verification status
+  useEffect(() => {
+    const checkVerification = async () => {
+      const token = localStorage.getItem("token")
+      if (!token) {
+        router.push("/sign-in")
+        return
+      }
+
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsVerified(data.data.isVerified)
+        } else {
+          router.push("/sign-in")
+        }
+      } catch {
+        router.push("/sign-in")
+      }
+    }
+    checkVerification()
+  }, [router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({
@@ -73,6 +100,29 @@ export default function PayInPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (isVerified === null) {
+    return (
+      <div className="p-8 text-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  if (!isVerified) {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-4xl font-bold mb-4">Access Denied</h1>
+        <p className="text-muted-foreground mb-8">Your account is pending admin verification. Please contact support or wait for approval.</p>
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="btn-gradient px-6 py-2 rounded-lg"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    )
   }
 
   return (

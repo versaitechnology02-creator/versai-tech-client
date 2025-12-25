@@ -154,6 +154,30 @@ export default function AdminPage() {
     }
   }
 
+  async function toggleVerification(userId: string, verify: boolean) {
+    const token = localStorage.getItem("token")
+    if (!token) return
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/admin/users/${userId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ isVerified: verify }),
+        }
+      )
+      const data = await res.json()
+      if (data.success) {
+        setUsers((prev) =>
+          prev.map((u) => (u._id === userId ? { ...u, isVerified: verify } : u))
+        )
+      } else alert(data.message)
+    } catch {
+      alert("Request failed")
+    }
+  }
+
   // --- Export CSV ---
   async function exportCSV() {
     const token = localStorage.getItem("token")
@@ -311,6 +335,7 @@ export default function AdminPage() {
                           <th className="p-3 text-left">Company</th>
                           <th className="p-3 text-left">Phone</th>
                           <th className="p-3 text-left">Status</th>
+                          <th className="p-3 text-left">Verification</th>
                           <th className="p-3 text-left">Joined</th>
                           <th className="p-3 text-left">Admin Control</th>
                         </tr>
@@ -323,8 +348,19 @@ export default function AdminPage() {
                             <td className="p-3">{u.businessName || "-"}</td>
                             <td className="p-3">{u.phone || "-"}</td>
                             <td className="p-3">{u.status || "-"}</td>
-                            <td className="p-3">{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
                             <td className="p-3">
+                              <span className={`px-2 py-1 rounded text-xs font-semibold ${u.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
+                                {u.isVerified ? "Verified" : "Pending"}
+                              </span>
+                            </td>
+                            <td className="p-3">{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
+                            <td className="p-3 flex gap-2">
+                              <button
+                                onClick={() => toggleVerification(u._id, !u.isVerified)}
+                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isVerified ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
+                              >
+                                {u.isVerified ? "Reject" : "Verify"}
+                              </button>
                               <button
                                 onClick={() => toggleAdmin(u._id, !u.isAdmin)}
                                 className={`px-3 py-1 rounded text-white font-semibold transition ${u.isAdmin ? "bg-red-500 hover:bg-red-600" : "btn-gradient"
