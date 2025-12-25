@@ -213,11 +213,11 @@ export default function PayInPage() {
         } else {
           // No payment link available
           setStatus("error")
-          if (provider === "razorpay") {
-            setMessage("Razorpay requires checkout integration. Please use SMEPay or UnPay for direct payment links and QR codes.")
-          } else {
+          // if (provider === "razorpay") {
+          //   setMessage("Razorpay requires checkout integration. Please use SMEPay or UnPay for direct payment links and QR codes.")
+          // } else {
             setMessage(`${provider ? provider.toUpperCase() : 'Payment'} link not available. Please try again or contact support.`)
-          }
+          // }
           setLoading(false)
           return
         }
@@ -252,7 +252,18 @@ export default function PayInPage() {
         // setFormData(prev => ({ ...prev, amount: "", customer_name: "", customer_email: "" }))
       } else {
         setStatus("error")
-        setMessage(data.message || "Failed to create payment link")
+        let errorMessage = data.message || "Failed to create payment link"
+        
+        // Provide better error messages for specific cases
+        if (errorMessage.includes("local development")) {
+          errorMessage = "UnPay is not available in local development environment. Please use SMEPay or deploy to production."
+        } else if (errorMessage.includes("wallet balance") || errorMessage.includes("auth failed")) {
+          errorMessage = "Payment provider authentication failed. Please contact support."
+        } /* else if (provider === "razorpay") {
+          errorMessage = "Razorpay requires checkout integration. Please use SMEPay for direct payment links."
+        } */
+        
+        setMessage(errorMessage)
       }
     } catch (error: any) {
       console.error("Payment creation error:", error)
@@ -347,14 +358,14 @@ export default function PayInPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2">Select Payment Provider</label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
+              <div className="grid grid-cols-2 gap-2">
+                {/* <button
                   type="button"
                   onClick={() => setProvider("razorpay")}
                   className={`px-4 py-2 rounded-lg border ${provider === "razorpay" ? "border-primary text-primary" : "border-border"}`}
                 >
                   Razorpay
-                </button>
+                </button> */}
                 <button
                   type="button"
                   onClick={() => setProvider("smepay")}
