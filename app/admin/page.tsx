@@ -224,12 +224,12 @@ export default function AdminPage() {
   return (
     <div className="p-6 bg-background min-h-screen">
       <div className="flex gap-6">
-        <AdminSidebar
+        {/* <AdminSidebar
           selectedSection={selectedSection}
           setSelectedSection={setSelectedSection}
           usersCount={users.length}
           transactionsCount={totalTx || txns.length}
-        />
+        /> */}
 
         <main className="flex-1 space-y-8">
           {/* HEADER */}

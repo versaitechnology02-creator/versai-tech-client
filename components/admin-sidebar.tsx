@@ -17,8 +17,8 @@ export default function AdminSidebar({ selectedSection, setSelectedSection, user
   return (
     <aside className="w-64 hidden md:block">
       <Link href="/" className="px-6 pb-6 border-b border-border flex items-center gap-3">
-        <img src="/logo-white.png" alt="Versai Technologies" className="h-8 w-auto" />
-      </Link>
+                <img src="/logo-white.png" alt="Versai Technologies" className="h-8 w-auto" />
+              </Link>
       <div className="sticky top-6 border rounded p-4 bg-card">
         <h3 className="text-xl font-semibold mb-4">Admin</h3>
 

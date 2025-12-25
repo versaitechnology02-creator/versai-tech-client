@@ -28,9 +28,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }, [pathname, router])
 
   const isAuthPage = pathname?.includes("/sign-in") || pathname?.includes("/sign-up")
-  const isAdminPage = pathname?.startsWith("/admin")
 
-  if (isLoggedIn && !isAuthPage && !isAdminPage) {
+  if (isLoggedIn && !isAuthPage) {
     return (
       <html lang="en">
         <body className={inter.className}>

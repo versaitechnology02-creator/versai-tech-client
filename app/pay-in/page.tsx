@@ -22,6 +22,15 @@ export default function PayInPage() {
   const [generatedLink, setGeneratedLink] = useState("")
   const [isVerified, setIsVerified] = useState<boolean | null>(null)
 
+  // Helper function to check if a link is a UPI payment link
+  const isUpiLink = (link: string): boolean => {
+    if (!link) return false
+    return link.startsWith("upi://") || 
+           link.startsWith("https://pay?") || 
+           link.includes("upi://pay") ||
+           (link.startsWith("https://") && (link.includes("/pay?") || link.includes("upi")))
+  }
+
   // Check user verification status
   useEffect(() => {
     const checkVerification = async () => {
@@ -69,9 +78,21 @@ export default function PayInPage() {
         return
       }
 
+      const token = localStorage.getItem("token")
+      if (!token) {
+        setLoading(false)
+        setStatus("error")
+        setMessage("Please sign in to create payment links")
+        router.push("/sign-in")
+        return
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/create-order`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           amount: Number.parseFloat(formData.amount),
           currency: "INR",
@@ -85,8 +106,25 @@ export default function PayInPage() {
 
       const data = await res.json()
       if (data.success) {
-        const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
-        const paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
+        // Use UPI intent/link for direct payment if available, otherwise fallback to web URL
+        let paymentLink = ""
+        let qrCodeValue = ""
+        
+        if (provider === "unpay" && data.data.unpay_upi_intent) {
+          // Use UnPay UPI intent for direct payment
+          paymentLink = data.data.unpay_upi_intent
+          qrCodeValue = data.data.unpay_upi_intent
+        } else if (provider === "smepay" && data.data.smepay_upi_link) {
+          // Use Smepay UPI link for direct payment
+          paymentLink = data.data.smepay_upi_link
+          qrCodeValue = data.data.smepay_upi_link
+        } else {
+          // Fallback to web payment page URL
+          const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
+          paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
+          qrCodeValue = paymentLink
+        }
+        
         setGeneratedLink(paymentLink)
         setStatus("success")
         setMessage("Payment link created successfully!")
@@ -232,12 +270,31 @@ export default function PayInPage() {
               </div>
 
               <div className="space-y-4">
-                <p className="text-muted-foreground">Share this link with your customer:</p>
-                <div className="bg-background border border-border rounded-lg p-4 break-all text-sm">
-                  {generatedLink}
-                </div>
+                <p className="text-muted-foreground">
+                  {isUpiLink(generatedLink)
+                    ? "Share this UPI payment link with your customer (click to open UPI app):" 
+                    : "Share this link with your customer:"}
+                </p>
+                {isUpiLink(generatedLink) ? (
+                  <a 
+                    href={generatedLink}
+                    className="bg-background border border-border rounded-lg p-4 break-all text-sm text-primary hover:underline block"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {generatedLink}
+                  </a>
+                ) : (
+                  <div className="bg-background border border-border rounded-lg p-4 break-all text-sm">
+                    {generatedLink}
+                  </div>
+                )}
                 <div className="flex flex-col items-center gap-2">
-                  <p className="text-sm text-muted-foreground">Scan to pay via {provider.toUpperCase()}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isUpiLink(generatedLink)
+                      ? "Scan QR code to pay directly via UPI app" 
+                      : `Scan to pay via ${provider.toUpperCase()}`}
+                  </p>
                   <div className="bg-white p-4 rounded-md inline-block">
                     <QRCode value={generatedLink} size={160} />
                   </div>
