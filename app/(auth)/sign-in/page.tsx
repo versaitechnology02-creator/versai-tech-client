@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Mail, Loader2, Lock } from "lucide-react"
@@ -11,6 +11,16 @@ export default function SignIn() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  
+  // Check for pending verification message
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("message") === "pending-verification") {
+      toast.success("Email verified! Your account is pending admin verification. You will be notified once approved.")
+      // Clean URL
+      router.replace("/sign-in")
+    }
+  }, [router])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()

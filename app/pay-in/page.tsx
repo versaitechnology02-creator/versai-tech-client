@@ -181,11 +181,12 @@ export default function PayInPage() {
 
       const data = await res.json()
       if (data.success) {
-        // Use UPI intent/link for direct payment if available, otherwise fallback to web URL
+        // CRITICAL: Only use UPI intents or official gateway hosted links
+        // NEVER generate frontend URLs for payment links/QR codes
         let paymentLink = ""
         let qrCodeValue = ""
         
-        // Helper to validate and use UPI intent
+        // Helper to validate and extract UPI intent
         const getUpiIntent = (upiString: string | null | undefined): string | null => {
           if (!upiString || typeof upiString !== 'string') return null
           // Check if it's already a valid UPI intent format
@@ -197,39 +198,113 @@ export default function PayInPage() {
             const match = upiString.match(/upi:\/\/[^\s"']+/i)
             if (match) return match[0]
           }
-          // Return as-is if it looks like a UPI intent
-          return upiString
+          // Return null if not a valid UPI intent
+          return null
         }
         
-        if (provider === "unpay" && data.data.unpay_upi_intent) {
-          // Use UnPay UPI intent for direct payment
+        // Helper to check if URL is an official gateway hosted link
+        const isOfficialGatewayLink = (url: string): boolean => {
+          if (!url || typeof url !== 'string') return false
+          // Check for official gateway domains (NOT our frontend domain)
+          const frontendDomains = ['versai-tech-client', 'vercel.app', 'localhost', '127.0.0.1']
+          const isFrontendUrl = frontendDomains.some(domain => url.includes(domain))
+          if (isFrontendUrl) return false
+          
+          // Check for official gateway domains
+          return url.includes('razorpay.com') || 
+                 url.includes('rzp.io') ||
+                 url.includes('smepay') ||
+                 url.includes('unpay.in') ||
+                 url.includes('typof.co') ||
+                 url.includes('checkout') ||
+                 url.startsWith('https://') // Any HTTPS URL that's not our frontend
+        }
+        
+        if (provider === "unpay") {
+          // UnPay: Use UPI intent or official UnPay hosted link
           const upiIntent = getUpiIntent(data.data.unpay_upi_intent)
           if (upiIntent) {
             paymentLink = upiIntent
             qrCodeValue = upiIntent
+          } else if (data.data.unpay_upi_intent && isOfficialGatewayLink(data.data.unpay_upi_intent)) {
+            // Use official UnPay hosted link if available
+            paymentLink = data.data.unpay_upi_intent
+            qrCodeValue = data.data.unpay_upi_intent
           } else {
-            // Fallback to web URL if UPI intent is invalid
-            const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
-            paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
-            qrCodeValue = paymentLink
+            // No valid payment link available from UnPay
+            setStatus("error")
+            setMessage("UnPay payment link not available. Please try again or use a different provider.")
+            setLoading(false)
+            return
           }
-        } else if (provider === "smepay" && data.data.smepay_upi_link) {
-          // Use Smepay UPI link for direct payment
+        } else if (provider === "smepay") {
+          // SMEPay: Use UPI intent or official SMEPay hosted link
           const upiIntent = getUpiIntent(data.data.smepay_upi_link)
           if (upiIntent) {
             paymentLink = upiIntent
             qrCodeValue = upiIntent
+          } else if (data.data.smepay_upi_link && isOfficialGatewayLink(data.data.smepay_upi_link)) {
+            // Use official SMEPay hosted link if available
+            paymentLink = data.data.smepay_upi_link
+            qrCodeValue = data.data.smepay_upi_link
           } else {
-            // Fallback to web URL if UPI intent is invalid
-            const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
-            paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
-            qrCodeValue = paymentLink
+            // No valid payment link available from SMEPay
+            setStatus("error")
+            setMessage("SMEPay payment link not available. Please try again or use a different provider.")
+            setLoading(false)
+            return
           }
+        } else if (provider === "razorpay") {
+          // Razorpay: Use Razorpay checkout link (rzp.io or razorpay.com)
+          // Razorpay checkout URLs are generated client-side, but we need the order_id
+          // For QR codes, we should use Razorpay's hosted checkout page
+          const razorpayCheckoutUrl = `https://checkout.razorpay.com/v1/checkout.js?key=${data.data.key_id}&order_id=${data.data.order_id}`
+          // However, Razorpay QR codes typically use their hosted payment page
+          // For now, we'll use the order_id and let Razorpay handle the payment flow
+          // But we should NOT generate our frontend URL
+          setStatus("error")
+          setMessage("Razorpay requires checkout integration. Please use UnPay or SMEPay for direct payment links and QR codes.")
+          setLoading(false)
+          return
         } else {
-          // Fallback to web payment page URL (for Razorpay or when UPI unavailable)
-          const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
-          paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
-          qrCodeValue = paymentLink
+          // Unknown provider or no provider selected
+          setStatus("error")
+          setMessage("Invalid payment provider. Please select UnPay or SMEPay for payment links.")
+          setLoading(false)
+          return
+        }
+        
+        // CRITICAL VALIDATION: Ensure we NEVER use frontend URLs
+        // Validate that we have a valid payment link (UPI intent or official gateway link)
+        if (!paymentLink) {
+          setStatus("error")
+          setMessage("Failed to generate valid payment link. Please try again or contact support.")
+          setLoading(false)
+          return
+        }
+        
+        // Final check: Reject any frontend URLs
+        const frontendDomains = ['versai-tech-client', 'vercel.app', 'localhost', '127.0.0.1']
+        const isFrontendUrl = frontendDomains.some(domain => paymentLink.includes(domain))
+        if (isFrontendUrl && !paymentLink.startsWith('upi://')) {
+          console.error("[CRITICAL] Frontend URL detected in payment link:", paymentLink)
+          setStatus("error")
+          setMessage("Invalid payment link format. Please contact support.")
+          setLoading(false)
+          return
+        }
+        
+        // Validate it's either UPI intent or official gateway link
+        const isValidLink = paymentLink.startsWith('upi://') || 
+                           paymentLink.startsWith('UPI://') || 
+                           isOfficialGatewayLink(paymentLink)
+        
+        if (!isValidLink) {
+          console.error("[CRITICAL] Invalid payment link format:", paymentLink)
+          setStatus("error")
+          setMessage("Invalid payment link format. Please try again or contact support.")
+          setLoading(false)
+          return
         }
         
         setGeneratedLink(paymentLink)

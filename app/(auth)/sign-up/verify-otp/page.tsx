@@ -27,12 +27,14 @@ function VerifyOTPContent() {
       const data = await res.json();
 
       if (data.success) {
-        toast.success("OTP verified successfully!");
-        localStorage.setItem("token", data.token);
-
+        toast.success(data.message || "Email verified successfully! Your account is pending admin verification.");
+        // DO NOT save token - user cannot login until admin verifies
+        // DO NOT redirect to dashboard - user must wait for admin approval
+        
+        // Show message and redirect to sign-in page
         setTimeout(() => {
-          router.push("/dashboard");
-        }, 800);
+          router.push("/sign-in?message=pending-verification");
+        }, 2000);
       } else {
         toast.error(data.message || "OTP verification failed");
       }
