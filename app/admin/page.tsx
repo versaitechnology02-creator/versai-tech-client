@@ -6,8 +6,8 @@ import dynamic from "next/dynamic"
 import TransactionModal from "./components/TransactionModal"
 import TransactionList from "@/components/transaction-list"
 import DashboardStats from "@/components/dashboard-stats"
+import AdminSidebar from "@/components/admin-sidebar"
 import UserModal from "@/components/user-modal"
-import Sidebar from "@/components/sidebar"
 import Link from "next/link"
 import { Loader2, Plus } from "lucide-react"
 
@@ -35,7 +35,7 @@ export default function AdminPage() {
   const [totalTx, setTotalTx] = useState(0)
   const [selectedTxId, setSelectedTxId] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<any | null>(null)
-  const [section, setSection] = useState("overview")
+  const [selectedSection, setSelectedSection] = useState<"overview" | "users" | "transactions">("overview")
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [dateFrom, setDateFrom] = useState("")
@@ -71,12 +71,6 @@ export default function AdminPage() {
 
     checkAdmin()
   }, [router])
-
-  // --- Set section from URL ---
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    setSection(params.get('section') || 'overview')
-  }, [])
 
   // --- Fetch Users & Transactions ---
   useEffect(() => {
@@ -228,232 +222,186 @@ export default function AdminPage() {
   }))
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
-      <main className="flex-1 p-6 overflow-auto space-y-6">
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Overview of payments and activity across your account.</p>
-          </div>
+    <div className="p-6 bg-background min-h-screen">
+      <div className="flex gap-6">
+        <AdminSidebar
+          selectedSection={selectedSection}
+          setSelectedSection={setSelectedSection}
+          usersCount={users.length}
+          transactionsCount={totalTx || txns.length}
+        />
 
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-              placeholder="Search transactions or users..."
-              className="border border-border rounded-lg px-4 py-2 w-72 focus:ring-2 focus:ring-primary outline-none transition"
-            />
-
-            <select
-              value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              className="border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none transition"
-            >
-              <option value="">All statuses</option>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-            </select>
-
-            <button
-              onClick={() => {
-                const to = new Date()
-                const from = new Date()
-                from.setDate(to.getDate() - 7)
-                setDateFrom(from.toISOString())
-                setDateTo(to.toISOString())
-                setPage(1)
-              }}
-              className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
-            >
-              Last 7d
-            </button>
-
-            <button
-              onClick={() => {
-                const to = new Date()
-                const from = new Date()
-                from.setDate(to.getDate() - 30)
-                setDateFrom(from.toISOString())
-                setDateTo(to.toISOString())
-                setPage(1)
-              }}
-              className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
-            >
-              Last 30d
-            </button>
-
-            <button
-              onClick={exportCSV}
-              className="btn-gradient px-4 py-2 rounded-lg transition"
-            >
-              Export CSV
-            </button>
-
-            <Link
-              href="/pay-in"
-              className="btn-gradient px-4 py-2 rounded-lg flex items-center gap-2 transition"
-            >
-              <Plus size={18} />
-              New Payment
-            </Link>
-          </div>
-        </div>
-
-        {/* OVERVIEW SECTION */}
-        {section === "overview" && (
-          <>
-            <DashboardStats transactions={dashboardStatsTxns as any} />
-
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-semibold text-foreground">Recent Transactions</h2>
-                <Link
-                  href="/transactions"
-                  className="text-primary hover:underline text-sm font-medium"
-                >
-                  View All Transactions
-                </Link>
-              </div>
-              <div className="bg-card border border-border rounded-lg shadow-sm">
-                {loadingTxns ? (
-                  <div className="flex justify-center items-center py-12">
-                    <Loader2 className="animate-spin text-primary" size={28} />
-                  </div>
-                ) : (
-                  <TransactionList transactions={uiTxns.slice(0, 5) as any} />
-                )}
-              </div>
+        <main className="flex-1 space-y-8">
+          {/* HEADER */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+              <p className="text-muted-foreground mt-1">Overview of payments and activity across your account.</p>
             </div>
 
+            <div className="flex flex-wrap items-center gap-3">
+              <input
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                placeholder="Search transactions or users..."
+                className="border border-border rounded-lg px-4 py-2 w-72 focus:ring-2 focus:ring-primary outline-none transition"
+              />
+
+              <select
+                value={statusFilter}
+                onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
+                className="border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none transition"
+              >
+                <option value="">All statuses</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+              </select>
+
+              <button
+                onClick={() => {
+                  const to = new Date()
+                  const from = new Date()
+                  from.setDate(to.getDate() - 7)
+                  setDateFrom(from.toISOString())
+                  setDateTo(to.toISOString())
+                  setPage(1)
+                }}
+                className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+              >
+                Last 7d
+              </button>
+
+              <button
+                onClick={() => {
+                  const to = new Date()
+                  const from = new Date()
+                  from.setDate(to.getDate() - 30)
+                  setDateFrom(from.toISOString())
+                  setDateTo(to.toISOString())
+                  setPage(1)
+                }}
+                className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+              >
+                Last 30d
+              </button>
+
+              <button
+                onClick={exportCSV}
+                className="btn-gradient px-4 py-2 rounded-lg transition"
+              >
+                Export CSV
+              </button>
+
+              <Link
+                href="/pay-in"
+                className="btn-gradient px-4 py-2 rounded-lg flex items-center gap-2 transition"
+              >
+                <Plus size={18} />
+                New Payment
+              </Link>
+            </div>
+          </div>
+
+          {/* OVERVIEW SECTION */}
+          {selectedSection === "overview" && (
+            <>
+              <DashboardStats transactions={dashboardStatsTxns as any} />
+
+              <div className="mt-8 space-y-6">
+                <h2 className="text-2xl font-semibold text-foreground">Recent Transactions</h2>
+                <div className="bg-card border border-border rounded-lg shadow-sm">
+                  {loadingTxns ? (
+                    <div className="flex justify-center items-center py-12">
+                      <Loader2 className="animate-spin text-primary" size={28} />
+                    </div>
+                  ) : (
+                    <TransactionList transactions={uiTxns as any} />
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-2xl font-semibold text-foreground mb-4">Users</h2>
+                {loadingUsers ? (
+                  <div>Loading users...</div>
+                ) : (
+                  <div className="overflow-auto border border-border rounded-lg shadow-sm bg-card">
+                    <table className="w-full text-sm">
+                      <thead className="text-foreground font-medium bg-gray-200">
+                        <tr>
+                          <th className="p-3 text-left">Name</th>
+                          <th className="p-3 text-left">Email</th>
+                          <th className="p-3 text-left">Company</th>
+                          <th className="p-3 text-left">Phone</th>
+                          <th className="p-3 text-left">Status</th>
+                          <th className="p-3 text-left">Verification</th>
+                          <th className="p-3 text-left">Joined</th>
+                          <th className="p-3 text-left">Admin Control</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {users.map((u) => (
+                          <tr key={u._id} className="hover:bg-background transition">
+                            <td className="p-3">{u.name}</td>
+                            <td className="p-3">{u.email}</td>
+                            <td className="p-3">{u.businessName || "-"}</td>
+                            <td className="p-3">{u.phone || "-"}</td>
+                            <td className="p-3">{u.status || "-"}</td>
+                            <td className="p-3">
+                              <span className={`px-2 py-1 rounded text-xs font-semibold ${u.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
+                                {u.isVerified ? "Verified" : "Pending"}
+                              </span>
+                            </td>
+                            <td className="p-3">{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
+                            <td className="p-3 flex gap-2">
+                              <button
+                                onClick={() => toggleVerification(u._id, !u.isVerified)}
+                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isVerified ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
+                              >
+                                {u.isVerified ? "Reject" : "Verify"}
+                              </button>
+                              <button
+                                onClick={() => toggleAdmin(u._id, !u.isAdmin)}
+                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isAdmin ? "bg-red-500 hover:bg-red-600" : "btn-gradient"
+                                  }`}
+                              >
+                                {u.isAdmin ? "Remove Admin" : "Make Admin"}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* TRANSACTIONS SECTION */}
+          {selectedSection === "transactions" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-foreground">Pending User Verifications</h2>
-              {loadingUsers ? (
+              <h2 className="text-2xl font-semibold text-foreground">Transactions</h2>
+              {loadingTxns ? (
                 <div className="flex justify-center items-center py-12">
                   <Loader2 className="animate-spin text-primary" size={28} />
                 </div>
               ) : (
-                <div className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
-                  {users.filter(u => !u.isVerified).slice(0, 5).length === 0 ? (
-                    <div className="p-12 text-center text-muted-foreground">
-                      No pending verifications
-                    </div>
-                  ) : (
-                    <div className="divide-y divide-border">
-                      {users.filter(u => !u.isVerified).slice(0, 5).map((u) => (
-                        <div key={u._id} className="p-6 flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold">{u.name}</p>
-                            <p className="text-sm text-muted-foreground">{u.email}</p>
-                            <p className="text-xs text-muted-foreground">{u.businessName || "No business"}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => toggleVerification(u._id, true)}
-                              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-                            >
-                              Verify
-                            </button>
-                            <button
-                              onClick={() => toggleVerification(u._id, false)}
-                              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <div className="bg-card border border-border rounded-lg shadow-sm">
+                  <TransactionList transactions={uiTxns as any} onRowClick={(id) => setSelectedTxId(id)} />
                 </div>
               )}
             </div>
-          </>
-        )}
+          )}
 
-        {/* TRANSACTIONS SECTION */}
-        {section === "transactions" && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-foreground">Transactions</h2>
-            {loadingTxns ? (
-              <div className="flex justify-center items-center py-12">
-                <Loader2 className="animate-spin text-primary" size={28} />
-              </div>
-            ) : (
-              <div className="bg-card border border-border rounded-lg shadow-sm">
-                <TransactionList transactions={uiTxns as any} onRowClick={(id) => setSelectedTxId(id)} />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* USERS SECTION */}
-        {section === "users" && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-foreground">Users</h2>
-            {loadingUsers ? (
-              <div>Loading users...</div>
-            ) : (
-              <div className="overflow-auto border border-border rounded-lg shadow-sm bg-card">
-                <table className="w-full text-sm">
-                  <thead className="text-foreground font-medium bg-gray-200">
-                    <tr>
-                      <th className="p-3 text-left">Name</th>
-                      <th className="p-3 text-left">Email</th>
-                      <th className="p-3 text-left">Company</th>
-                      <th className="p-3 text-left">Phone</th>
-                      <th className="p-3 text-left">Status</th>
-                      <th className="p-3 text-left">Verification</th>
-                      <th className="p-3 text-left">Joined</th>
-                      <th className="p-3 text-left">Admin Control</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {users.map((u) => (
-                      <tr key={u._id} className="hover:bg-background transition">
-                        <td className="p-3">{u.name}</td>
-                        <td className="p-3">{u.email}</td>
-                        <td className="p-3">{u.businessName || "-"}</td>
-                        <td className="p-3">{u.phone || "-"}</td>
-                        <td className="p-3">{u.status || "-"}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-1 rounded text-xs font-semibold ${u.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
-                            {u.isVerified ? "Verified" : "Pending"}
-                          </span>
-                        </td>
-                        <td className="p-3">{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
-                        <td className="p-3 flex gap-2">
-                          <button
-                            onClick={() => toggleVerification(u._id, !u.isVerified)}
-                            className={`px-3 py-1 rounded text-white font-semibold transition ${u.isVerified ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
-                          >
-                            {u.isVerified ? "Reject" : "Verify"}
-                          </button>
-                          <button
-                            onClick={() => toggleAdmin(u._id, !u.isAdmin)}
-                            className={`px-3 py-1 rounded text-white font-semibold transition ${u.isAdmin ? "bg-red-500 hover:bg-red-600" : "btn-gradient"
-                              }`}
-                          >
-                            {u.isAdmin ? "Remove Admin" : "Make Admin"}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* MODALS */}
-        {selectedTxId && (
-          <TransactionModal id={selectedTxId} onClose={() => setSelectedTxId(null)} onUpdated={() => setPage(1)} />
-        )}
-        {selectedUser && <UserModal user={selectedUser} onClose={() => setSelectedUser(null)} />}
-      </main>
+          {/* MODALS */}
+          {selectedTxId && (
+            <TransactionModal id={selectedTxId} onClose={() => setSelectedTxId(null)} onUpdated={() => setPage(1)} />
+          )}
+          {selectedUser && <UserModal user={selectedUser} onClose={() => setSelectedUser(null)} />}
+        </main>
+      </div>
     </div>
   )
 }
