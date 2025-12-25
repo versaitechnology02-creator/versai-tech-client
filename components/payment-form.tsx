@@ -214,7 +214,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
             order_id: orderId,
             amount: Number(formData.amount) * 100, // paise; optional when order_id present
             currency: formData.currency,
-            name: "Versai Technologies",
+            name: "Versai Technology",
             description: formData.description,
             prefill: {
               name: formData.name,
@@ -289,7 +289,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
           order_id: orderData.data.order_id,
           amount: orderData.data.amount,
           currency: orderData.data.currency,
-          name: "Versai Technologies",
+          name: "Versai Technology",
           description: formData.description,
           prefill: {
             name: formData.name,

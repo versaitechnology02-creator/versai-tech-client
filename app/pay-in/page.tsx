@@ -13,7 +13,7 @@ export default function PayInPage() {
     amount: "",
     customer_name: "",
     customer_email: "",
-    description: "Versai Technologies",
+    description: "Versai Technology",
   })
   const [provider, setProvider] = useState<"razorpay" | "smepay" | "unpay" | "">("")
   const [loading, setLoading] = useState(false)
@@ -181,7 +181,7 @@ export default function PayInPage() {
       }
 
       const data = await res.json()
-      console.log("[Pay-In] Backend response:", { success: data.success, payment_link: data.data?.payment_link, provider })
+      console.log("[Pay-In] Backend response:", { success: data.success, final_payment_link: data.data?.final_payment_link, provider })
       
       if (data.success) {
         // CRITICAL: Only use UPI intents or official gateway hosted links
@@ -189,45 +189,11 @@ export default function PayInPage() {
         let paymentLink = ""
         let qrCodeValue = ""
         
-        // Helper to validate and extract UPI intent
-        const getUpiIntent = (upiString: string | null | undefined): string | null => {
-          if (!upiString || typeof upiString !== 'string') return null
-          // Check if it's already a valid UPI intent format
-          if (upiString.startsWith('upi://') || upiString.startsWith('UPI://')) {
-            return upiString
-          }
-          // If it's a URL that might contain UPI intent, try to extract it
-          if (upiString.includes('upi://')) {
-            const match = upiString.match(/upi:\/\/[^\s"']+/i)
-            if (match) return match[0]
-          }
-          // Return null if not a valid UPI intent
-          return null
-        }
-        
-        // Helper to check if URL is an official gateway hosted link
-        const isOfficialGatewayLink = (url: string): boolean => {
-          if (!url || typeof url !== 'string') return false
-          // Check for official gateway domains (NOT our frontend domain)
-          const frontendDomains = ['versai-tech-client', 'vercel.app', 'localhost', '127.0.0.1']
-          const isFrontendUrl = frontendDomains.some(domain => url.includes(domain))
-          if (isFrontendUrl) return false
-          
-          // Check for official gateway domains
-          return url.includes('razorpay.com') || 
-                 url.includes('rzp.io') ||
-                 url.includes('smepay') ||
-                 url.includes('unpay.in') ||
-                 url.includes('typof.co') ||
-                 url.includes('checkout') ||
-                 url.startsWith('https://') // Any HTTPS URL that's not our frontend
-        }
-        
-        // CRITICAL: Use payment_link from backend (provider-specific)
+        // CRITICAL: Use final_payment_link from backend (provider-specific)
         // Backend returns the correct link based on selected provider
-        const backendPaymentLink = data.data.payment_link
+        const backendPaymentLink = data.data.final_payment_link
         
-        // Backend always returns payment_link (can be null if unavailable)
+        // Backend always returns final_payment_link (can be null if unavailable)
         if (backendPaymentLink && typeof backendPaymentLink === 'string' && backendPaymentLink.trim()) {
           // Backend already validated the link, use it directly
           paymentLink = backendPaymentLink.trim()

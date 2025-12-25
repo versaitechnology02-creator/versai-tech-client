@@ -371,7 +371,7 @@ export default function AdminPage() {
                       <Loader2 className="animate-spin text-primary" size={28} />
                     </div>
                   ) : (
-                    <TransactionList transactions={uiTxns as any} />
+                    <TransactionList transactions={uiTxns as any} onRowClick={(id) => setSelectedTxId(id)} />
                   )}
                 </div>
               </div>
