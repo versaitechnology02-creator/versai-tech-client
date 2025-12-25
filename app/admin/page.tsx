@@ -156,25 +156,48 @@ export default function AdminPage() {
 
   async function toggleVerification(userId: string, verify: boolean) {
     const token = localStorage.getItem("token")
-    if (!token) return
+    if (!token) {
+      alert("Please sign in to verify users")
+      return
+    }
+
+    if (!userId) {
+      alert("Invalid user ID")
+      return
+    }
 
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/admin/users/${userId}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ isVerified: verify }),
+          headers: { 
+            "Content-Type": "application/json", 
+            Authorization: `Bearer ${token}` 
+          },
+          body: JSON.stringify({ isVerified: Boolean(verify) }),
         }
       )
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: `Server error: ${res.status}` }))
+        alert(errorData.message || `Failed to verify user (${res.status})`)
+        return
+      }
+
       const data = await res.json()
       if (data.success) {
         setUsers((prev) =>
           prev.map((u) => (u._id === userId ? { ...u, isVerified: verify } : u))
         )
-      } else alert(data.message)
-    } catch {
-      alert("Request failed")
+        // Show success message
+        alert(`User ${verify ? "verified" : "unverified"} successfully!`)
+      } else {
+        alert(data.message || "Failed to verify user")
+      }
+    } catch (error: any) {
+      console.error("Verification error:", error)
+      alert(`Request failed: ${error.message || "Network error"}`)
     }
   }
 

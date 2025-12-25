@@ -44,14 +44,33 @@ export default function PayInPage() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        const data = await res.json()
-        if (data.success) {
-          setIsVerified(data.data.isVerified)
-        } else {
-          router.push("/sign-in")
+        
+        if (!res.ok) {
+          console.error("User API error:", res.status, res.statusText)
+          if (res.status === 401 || res.status === 403) {
+            router.push("/sign-in")
+          } else {
+            // For other errors, still show the page but mark as not verified
+            setIsVerified(false)
+          }
+          return
         }
-      } catch {
-        router.push("/sign-in")
+        
+        const data = await res.json()
+        console.log("User data response:", data)
+        
+        if (data.success && data.user) {
+          // Backend returns { success: true, user: {...} }
+          setIsVerified(data.user.isVerified || false)
+        } else {
+          console.error("Invalid user data:", data)
+          // Don't redirect, just mark as not verified so user can see the access denied message
+          setIsVerified(false)
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error)
+        // Don't redirect on network errors, just mark as not verified
+        setIsVerified(false)
       }
     }
     checkVerification()
