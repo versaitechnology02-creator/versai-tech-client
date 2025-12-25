@@ -65,9 +65,17 @@ export default function PayInPage() {
           // Backend returns { success: true, user: {...} }
           // Check both isVerified and verified fields for compatibility
           const verified = data.user.isVerified === true || data.user.verified === true
+          console.log("[Pay-In] User verification status:", {
+            isVerified: data.user.isVerified,
+            verified: data.user.verified,
+            finalStatus: verified,
+            userId: data.user._id || data.user.id
+          })
           setIsVerified(verified)
+          // Store in localStorage to track verification state
+          localStorage.setItem('lastVerifiedStatus', verified ? 'true' : 'false')
         } else {
-          console.error("Invalid user data:", data)
+          console.error("[Pay-In] Invalid user data:", data)
           // Don't redirect, just mark as not verified so user can see the access denied message
           setIsVerified(false)
         }
@@ -82,12 +90,25 @@ export default function PayInPage() {
     
     // Refetch when window gains focus (user might have been verified in another tab)
     const handleFocus = () => {
+      console.log("[Pay-In] Window focused, refreshing verification status...")
       checkVerification()
     }
     window.addEventListener('focus', handleFocus)
     
+    // Periodic refresh every 5 seconds to catch verification updates
+    const intervalId = setInterval(() => {
+      // Only refresh if we're still checking (null) or not verified (false)
+      // Don't refresh if already verified to avoid unnecessary API calls
+      const currentVerified = localStorage.getItem('lastVerifiedStatus')
+      if (currentVerified !== 'true') {
+        console.log("[Pay-In] Periodic check - refreshing verification status...")
+        checkVerification()
+      }
+    }, 5000)
+    
     return () => {
       window.removeEventListener('focus', handleFocus)
+      clearInterval(intervalId)
     }
   }, [router])
 
@@ -164,16 +185,48 @@ export default function PayInPage() {
         let paymentLink = ""
         let qrCodeValue = ""
         
+        // Helper to validate and use UPI intent
+        const getUpiIntent = (upiString: string | null | undefined): string | null => {
+          if (!upiString || typeof upiString !== 'string') return null
+          // Check if it's already a valid UPI intent format
+          if (upiString.startsWith('upi://') || upiString.startsWith('UPI://')) {
+            return upiString
+          }
+          // If it's a URL that might contain UPI intent, try to extract it
+          if (upiString.includes('upi://')) {
+            const match = upiString.match(/upi:\/\/[^\s"']+/i)
+            if (match) return match[0]
+          }
+          // Return as-is if it looks like a UPI intent
+          return upiString
+        }
+        
         if (provider === "unpay" && data.data.unpay_upi_intent) {
           // Use UnPay UPI intent for direct payment
-          paymentLink = data.data.unpay_upi_intent
-          qrCodeValue = data.data.unpay_upi_intent
+          const upiIntent = getUpiIntent(data.data.unpay_upi_intent)
+          if (upiIntent) {
+            paymentLink = upiIntent
+            qrCodeValue = upiIntent
+          } else {
+            // Fallback to web URL if UPI intent is invalid
+            const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
+            paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
+            qrCodeValue = paymentLink
+          }
         } else if (provider === "smepay" && data.data.smepay_upi_link) {
           // Use Smepay UPI link for direct payment
-          paymentLink = data.data.smepay_upi_link
-          qrCodeValue = data.data.smepay_upi_link
+          const upiIntent = getUpiIntent(data.data.smepay_upi_link)
+          if (upiIntent) {
+            paymentLink = upiIntent
+            qrCodeValue = upiIntent
+          } else {
+            // Fallback to web URL if UPI intent is invalid
+            const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
+            paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
+            qrCodeValue = paymentLink
+          }
         } else {
-          // Fallback to web payment page URL
+          // Fallback to web payment page URL (for Razorpay or when UPI unavailable)
           const clientUrl = process.env.NEXT_PUBLIC_CLIENT_URL || window.location.origin
           paymentLink = `${clientUrl}/payment?order_id=${data.data.order_id}&provider=${provider}`
           qrCodeValue = paymentLink

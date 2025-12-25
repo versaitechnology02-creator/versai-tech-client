@@ -190,27 +190,40 @@ export default function AdminPage() {
       }
 
       const data = await res.json()
-      if (data.success) {
-        // Update local state
+      if (data.success && data.data) {
+        // Update local state with the actual response from server
         setUsers((prev) =>
-          prev.map((u) => (u._id === userId ? { ...u, isVerified: verify, verified: verify } : u))
+          prev.map((u) => {
+            if (u._id === userId) {
+              // Use server response data to ensure consistency
+              return {
+                ...u,
+                isVerified: data.data.isVerified || false,
+                verified: data.data.verified || data.data.isVerified || false,
+                isAdmin: data.data.isAdmin || false,
+              }
+            }
+            return u
+          })
         )
         // Show success message
         alert(`User ${verify ? "verified" : "unverified"} successfully!`)
         
-        // Refetch users list to ensure database consistency
-        // This ensures the updated verification status is reflected everywhere
-        const base = process.env.NEXT_PUBLIC_SERVER_URL
-        fetch(`${base}/api/admin/users?page=${page}&limit=${limit}${search ? `&q=${search}` : ''}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-          .then(r => r.json())
-          .then(d => {
-            if (d.success && d.data) {
-              setUsers(d.data.users || [])
-            }
+        // Refetch users list after a short delay to ensure database consistency
+        setTimeout(() => {
+          const base = process.env.NEXT_PUBLIC_SERVER_URL
+          fetch(`${base}/api/admin/users?page=${page}&limit=${limit}${search ? `&q=${search}` : ''}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store',
           })
-          .catch(console.error)
+            .then(r => r.json())
+            .then(d => {
+              if (d.success && d.data && d.data.users) {
+                setUsers(d.data.users)
+              }
+            })
+            .catch(err => console.error("Error refetching users:", err))
+        }, 500)
       } else {
         alert(data.message || "Failed to verify user")
       }
@@ -391,17 +404,21 @@ export default function AdminPage() {
                             <td className="p-3">{u.phone || "-"}</td>
                             <td className="p-3">{u.status || "-"}</td>
                             <td className="p-3">
-                              <span className={`px-2 py-1 rounded text-xs font-semibold ${u.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
-                                {u.isVerified ? "Verified" : "Pending"}
+                              <span className={`px-2 py-1 rounded text-xs font-semibold ${(u.isVerified === true || u.verified === true) ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
+                                {(u.isVerified === true || u.verified === true) ? "Verified" : "Pending"}
                               </span>
                             </td>
                             <td className="p-3">{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
                             <td className="p-3 flex gap-2">
                               <button
-                                onClick={() => toggleVerification(u._id, !u.isVerified)}
-                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isVerified ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
+                                onClick={() => {
+                                  // Check both isVerified and verified fields
+                                  const currentVerified = u.isVerified === true || u.verified === true
+                                  toggleVerification(u._id, !currentVerified)
+                                }}
+                                className={`px-3 py-1 rounded text-white font-semibold transition ${(u.isVerified === true || u.verified === true) ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
                               >
-                                {u.isVerified ? "Reject" : "Verify"}
+                                {(u.isVerified === true || u.verified === true) ? "Reject" : "Verify"}
                               </button>
                               <button
                                 onClick={() => toggleAdmin(u._id, !u.isAdmin)}
