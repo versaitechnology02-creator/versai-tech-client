@@ -31,7 +31,7 @@ export default function PayInPage() {
            (link.startsWith("https://") && (link.includes("/pay?") || link.includes("upi")))
   }
 
-  // Check user verification status
+  // Check user verification status - refetch on focus to catch verification updates
   useEffect(() => {
     const checkVerification = async () => {
       const token = localStorage.getItem("token")
@@ -41,8 +41,10 @@ export default function PayInPage() {
       }
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/me`, {
+        // Add cache-busting timestamp to ensure fresh data
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/me?t=${Date.now()}`, {
           headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store',
         })
         
         if (!res.ok) {
@@ -61,7 +63,9 @@ export default function PayInPage() {
         
         if (data.success && data.user) {
           // Backend returns { success: true, user: {...} }
-          setIsVerified(data.user.isVerified || false)
+          // Check both isVerified and verified fields for compatibility
+          const verified = data.user.isVerified === true || data.user.verified === true
+          setIsVerified(verified)
         } else {
           console.error("Invalid user data:", data)
           // Don't redirect, just mark as not verified so user can see the access denied message
@@ -73,7 +77,18 @@ export default function PayInPage() {
         setIsVerified(false)
       }
     }
+    
     checkVerification()
+    
+    // Refetch when window gains focus (user might have been verified in another tab)
+    const handleFocus = () => {
+      checkVerification()
+    }
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

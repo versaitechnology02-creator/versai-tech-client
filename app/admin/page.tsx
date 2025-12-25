@@ -191,11 +191,26 @@ export default function AdminPage() {
 
       const data = await res.json()
       if (data.success) {
+        // Update local state
         setUsers((prev) =>
-          prev.map((u) => (u._id === userId ? { ...u, isVerified: verify } : u))
+          prev.map((u) => (u._id === userId ? { ...u, isVerified: verify, verified: verify } : u))
         )
         // Show success message
         alert(`User ${verify ? "verified" : "unverified"} successfully!`)
+        
+        // Refetch users list to ensure database consistency
+        // This ensures the updated verification status is reflected everywhere
+        const base = process.env.NEXT_PUBLIC_SERVER_URL
+        fetch(`${base}/api/admin/users?page=${page}&limit=${limit}${search ? `&q=${search}` : ''}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+          .then(r => r.json())
+          .then(d => {
+            if (d.success && d.data) {
+              setUsers(d.data.users || [])
+            }
+          })
+          .catch(console.error)
       } else {
         alert(data.message || "Failed to verify user")
       }
