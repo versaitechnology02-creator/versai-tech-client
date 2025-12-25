@@ -166,6 +166,10 @@ export default function AdminPage() {
       return
     }
 
+    // Find current user to preserve isAdmin status
+    const currentUser = users.find(u => u._id === userId)
+    const currentIsAdmin = currentUser?.isAdmin || false
+
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/admin/users/${userId}`,
@@ -175,7 +179,7 @@ export default function AdminPage() {
             "Content-Type": "application/json", 
             Authorization: `Bearer ${token}` 
           },
-          body: JSON.stringify({ isVerified: Boolean(verify) }),
+          body: JSON.stringify({ isVerified: Boolean(verify), isAdmin: currentIsAdmin }),
         }
       )
 
