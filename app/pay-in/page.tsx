@@ -181,6 +181,8 @@ export default function PayInPage() {
       }
 
       const data = await res.json()
+      console.log("[Pay-In] Backend response:", { success: data.success, payment_link: data.data?.payment_link, provider })
+      
       if (data.success) {
         // CRITICAL: Only use UPI intents or official gateway hosted links
         // NEVER generate frontend URLs for payment links/QR codes
@@ -225,97 +227,57 @@ export default function PayInPage() {
         // Backend returns the correct link based on selected provider
         const backendPaymentLink = data.data.payment_link
         
-        if (backendPaymentLink) {
-          // Check if it's a UPI intent
-          const upiIntent = getUpiIntent(backendPaymentLink)
-          if (upiIntent) {
-            paymentLink = upiIntent
-            qrCodeValue = upiIntent
-          } else if (isOfficialGatewayLink(backendPaymentLink)) {
-            // Use official gateway hosted link
-            paymentLink = backendPaymentLink
-            qrCodeValue = backendPaymentLink
-          } else {
-            // Invalid link format
+        // Backend always returns payment_link (can be null if unavailable)
+        if (backendPaymentLink && typeof backendPaymentLink === 'string' && backendPaymentLink.trim()) {
+          // Backend already validated the link, use it directly
+          paymentLink = backendPaymentLink.trim()
+          qrCodeValue = backendPaymentLink.trim()
+          
+          // Only validate that it's not a frontend URL
+          const frontendDomains = ['versai-tech-client', 'vercel.app', 'localhost', '127.0.0.1']
+          const isFrontendUrl = frontendDomains.some(domain => paymentLink.includes(domain))
+          
+          if (isFrontendUrl && !paymentLink.startsWith('upi://')) {
+            console.error("[CRITICAL] Frontend URL detected:", paymentLink)
             setStatus("error")
-            setMessage("Invalid payment link format received from server. Please try again or contact support.")
+            setMessage("Invalid payment link format. Please contact support.")
             setLoading(false)
             return
           }
         } else {
-          // Fallback to provider-specific fields (backward compatibility)
-          if (provider === "unpay") {
-            const upiIntent = getUpiIntent(data.data.unpay_upi_intent)
-            if (upiIntent) {
-              paymentLink = upiIntent
-              qrCodeValue = upiIntent
-            } else if (data.data.unpay_upi_intent && isOfficialGatewayLink(data.data.unpay_upi_intent)) {
-              paymentLink = data.data.unpay_upi_intent
-              qrCodeValue = data.data.unpay_upi_intent
-            } else {
-              setStatus("error")
-              setMessage("UnPay payment link not available. Please try again or use a different provider.")
-              setLoading(false)
-              return
-            }
-          } else if (provider === "smepay") {
-            // SMEPay: Use payment_url directly (as per requirement)
-            const smepayLink = data.data.smepay_upi_link
-            if (smepayLink && isOfficialGatewayLink(smepayLink)) {
-              paymentLink = smepayLink
-              qrCodeValue = smepayLink
-            } else {
-              setStatus("error")
-              setMessage("SMEPay payment link not available. Please try again or contact support.")
-              setLoading(false)
-              return
-            }
-          } else if (provider === "razorpay") {
-            setStatus("error")
+          // No payment link available
+          setStatus("error")
+          if (provider === "razorpay") {
             setMessage("Razorpay requires checkout integration. Please use SMEPay or UnPay for direct payment links and QR codes.")
-            setLoading(false)
-            return
           } else {
-            setStatus("error")
-            setMessage("Invalid payment provider. Please select SMEPay or UnPay for payment links.")
-            setLoading(false)
-            return
+            setMessage(`${provider ? provider.toUpperCase() : 'Payment'} link not available. Please try again or contact support.`)
           }
+          setLoading(false)
+          return
         }
         
-        // CRITICAL VALIDATION: Ensure we NEVER use frontend URLs
-        // Validate that we have a valid payment link (UPI intent or official gateway link)
-        if (!paymentLink) {
+        // Final validation: Ensure we have a valid payment link
+        if (!paymentLink || paymentLink.trim().length === 0) {
           setStatus("error")
           setMessage("Failed to generate valid payment link. Please try again or contact support.")
           setLoading(false)
           return
         }
         
-        // Final check: Reject any frontend URLs
-        const frontendDomains = ['versai-tech-client', 'vercel.app', 'localhost', '127.0.0.1']
+        // Final check: Reject any frontend URLs (but allow UPI intents and gateway links)
+        const frontendDomains = ['versai-tech-client.vercel.app', 'localhost:3000', '127.0.0.1:3000']
         const isFrontendUrl = frontendDomains.some(domain => paymentLink.includes(domain))
+        
         if (isFrontendUrl && !paymentLink.startsWith('upi://')) {
-          console.error("[CRITICAL] Frontend URL detected in payment link:", paymentLink)
+          console.error("[CRITICAL] Frontend URL detected:", paymentLink)
           setStatus("error")
           setMessage("Invalid payment link format. Please contact support.")
           setLoading(false)
           return
         }
         
-        // Validate it's either UPI intent or official gateway link
-        const isValidLink = paymentLink.startsWith('upi://') || 
-                           paymentLink.startsWith('UPI://') || 
-                           isOfficialGatewayLink(paymentLink)
-        
-        if (!isValidLink) {
-          console.error("[CRITICAL] Invalid payment link format:", paymentLink)
-          setStatus("error")
-          setMessage("Invalid payment link format. Please try again or contact support.")
-          setLoading(false)
-          return
-        }
-        
+        // Set the payment link and show success
+        console.log("[Pay-In] Setting payment link:", paymentLink)
         setGeneratedLink(paymentLink)
         setStatus("success")
         setMessage("Payment link created successfully!")
