@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   ArrowRightLeft,
@@ -16,6 +17,9 @@ import {
   User,
   HelpCircle,
   LogOut,
+  Users,
+  FileText,
+  BarChart2,
 } from "lucide-react";
 
 const menuItems = [
@@ -29,6 +33,13 @@ const menuItems = [
   { icon: BookOpen, label: "API Documentation", href: "/api-docs" },
 ];
 
+const adminItems = [
+  { icon: LayoutDashboard, label: "Admin Dashboard", href: "/admin" },
+  { icon: FileText, label: "Admin Transactions", href: "/admin?section=transactions" },
+  { icon: Users, label: "Admin Users", href: "/admin?section=users" },
+  { icon: BarChart2, label: "Reports", href: "/admin?section=reports" },
+];
+
 const bottomItems = [
   { icon: User, label: "Account", href: "/account" },
   { icon: HelpCircle, label: "Support", href: "/support" },
@@ -37,6 +48,19 @@ const bottomItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setIsAdmin(!!parsed.isAdmin);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, []);
 
   function handleLogout() {
     try {
@@ -78,6 +102,34 @@ export default function Sidebar() {
             </Link>
           );
         })}
+        {isAdmin && (
+          <>
+            <div className="border-t border-border my-4"></div>
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-4 mb-2">Admin</div>
+            {adminItems.map((item) => {
+              const Icon = item.icon;
+              const url = new URL(item.href, 'http://dummy');
+              const itemPath = url.pathname;
+              const itemSection = url.searchParams.get('section');
+              const currentSearch = typeof window !== 'undefined' ? window.location.search : '';
+              const currentParams = new URLSearchParams(currentSearch);
+              const currentSection = currentParams.get('section') || 'overview';
+              const isActive = pathname === itemPath && currentSection === itemSection;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                    isActive ? "bg-primary text-white" : "text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
+          </>
+        )}
       </nav>
 
       {/* Bottom Menu */}
