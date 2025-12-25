@@ -68,8 +68,17 @@ export default function PayInPage() {
     e.preventDefault()
     setLoading(true)
     setStatus("idle")
+    setMessage("")
 
     try {
+      // Validate form fields
+      if (!formData.amount || Number.parseFloat(formData.amount) <= 0) {
+        setLoading(false)
+        setStatus("error")
+        setMessage("Please enter a valid amount greater than 0")
+        return
+      }
+
       // Ensure a provider is selected before creating the link
       if (!provider) {
         setLoading(false)
@@ -87,6 +96,8 @@ export default function PayInPage() {
         return
       }
 
+      console.log("Creating payment order with:", { amount: formData.amount, provider, description: formData.description })
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/create-order`, {
         method: "POST",
         headers: { 
@@ -103,6 +114,15 @@ export default function PayInPage() {
           },
         }),
       })
+
+      // Check if response is ok
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: `Server error: ${res.status} ${res.statusText}` }))
+        setStatus("error")
+        setMessage(errorData.message || `Failed to create payment link (${res.status})`)
+        setLoading(false)
+        return
+      }
 
       const data = await res.json()
       if (data.success) {
@@ -128,13 +148,17 @@ export default function PayInPage() {
         setGeneratedLink(paymentLink)
         setStatus("success")
         setMessage("Payment link created successfully!")
+        
+        // Reset form for next payment (optional - keep amount and description)
+        // setFormData(prev => ({ ...prev, amount: "", customer_name: "", customer_email: "" }))
       } else {
         setStatus("error")
         setMessage(data.message || "Failed to create payment link")
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Payment creation error:", error)
       setStatus("error")
-      setMessage("Error creating payment link")
+      setMessage(error.message || "Network error: Please check your connection and try again")
     } finally {
       setLoading(false)
     }
@@ -252,11 +276,16 @@ export default function PayInPage() {
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full btn-gradient py-2 rounded-lg font-semibold transition disabled:opacity-50"
+              disabled={loading || !provider}
+              className="w-full btn-gradient py-2 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating..." : "Create Payment Link"}
             </button>
+            {!provider && (
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Please select a payment provider above
+              </p>
+            )}
           </form>
         </div>
 
@@ -264,9 +293,22 @@ export default function PayInPage() {
         <div>
           {status === "success" && (
             <div className="bg-card border border-border rounded-lg p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <CheckCircle className="text-secondary" size={32} />
-                <h3 className="text-2xl font-bold">Link Created!</h3>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="text-secondary" size={32} />
+                  <h3 className="text-2xl font-bold">Link Created!</h3>
+                </div>
+                <button
+                  onClick={() => {
+                    setStatus("idle")
+                    setGeneratedLink("")
+                    setMessage("")
+                    setProvider("")
+                  }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition"
+                >
+                  Create Another
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -319,7 +361,16 @@ export default function PayInPage() {
                 <AlertCircle className="text-destructive" size={32} />
                 <h3 className="text-2xl font-bold">Error</h3>
               </div>
-              <p className="text-muted-foreground">{message}</p>
+              <p className="text-muted-foreground mb-4">{message}</p>
+              <button
+                onClick={() => {
+                  setStatus("idle")
+                  setMessage("")
+                }}
+                className="text-sm text-destructive hover:underline"
+              >
+                Try Again
+              </button>
             </div>
           )}
 
