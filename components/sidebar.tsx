@@ -64,14 +64,11 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                isActive ? "btn-gradient" : "text-foreground hover:bg-muted"
-              }`}
+              className="btn-gradient flex items-center gap-3 px-4 py-3 rounded-lg transition"
             >
               <Icon size={20} />
               <span className="text-sm font-medium">{item.label}</span>
@@ -84,14 +81,11 @@ export default function Sidebar() {
       <div className="border-t border-border px-4 py-4 space-y-2">
         {bottomItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                isActive ? "btn-gradient" : "text-foreground hover:bg-muted"
-              }`}
+              className="btn-gradient flex items-center gap-3 px-4 py-3 rounded-lg transition"
             >
               <Icon size={20} />
               <span className="text-sm font-medium">{item.label}</span>
@@ -101,7 +95,7 @@ export default function Sidebar() {
         <button
           type="button"
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-muted transition"
+          className="btn-gradient w-full flex items-center gap-3 px-4 py-3 rounded-lg transition"
         >
           <LogOut size={20} />
           <span className="text-sm font-medium">Logout</span>
