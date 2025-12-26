@@ -84,7 +84,7 @@ export default function DashboardPage() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+              className="btn-gradient text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
             >
               Admin Panel
             </Link>
