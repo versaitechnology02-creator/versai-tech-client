@@ -322,7 +322,7 @@ export default function AdminPage() {
                   setDateTo(to.toISOString())
                   setPage(1)
                 }}
-                className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+                className="btn-gradient text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
               >
                 Last 7d
               </button>
@@ -336,7 +336,7 @@ export default function AdminPage() {
                   setDateTo(to.toISOString())
                   setPage(1)
                 }}
-                className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+                className="btn-gradient text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
               >
                 Last 30d
               </button>

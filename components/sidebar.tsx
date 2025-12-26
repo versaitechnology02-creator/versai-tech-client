@@ -70,7 +70,7 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                isActive ? "bg-primary text-white" : "text-foreground hover:bg-muted"
+                isActive ? "bg-gradient text-white" : "text-foreground hover:bg-muted"
               }`}
             >
               <Icon size={20} />
@@ -90,7 +90,7 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                isActive ? "bg-primary text-white" : "text-foreground hover:bg-muted"
+                isActive ? "bg-gradient text-white" : "text-foreground hover:bg-muted"
               }`}
             >
               <Icon size={20} />
