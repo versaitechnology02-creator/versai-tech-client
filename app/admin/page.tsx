@@ -322,7 +322,7 @@ export default function AdminPage() {
                   setDateTo(to.toISOString())
                   setPage(1)
                 }}
-                className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+                className="btn-gradient text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
               >
                 Last 7d
               </button>
@@ -336,7 +336,7 @@ export default function AdminPage() {
                   setDateTo(to.toISOString())
                   setPage(1)
                 }}
-                className="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
+                className="btn-gradient text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition"
               >
                 Last 30d
               </button>
@@ -404,21 +404,20 @@ export default function AdminPage() {
                             <td className="p-3">{u.phone || "-"}</td>
                             <td className="p-3">{u.status || "-"}</td>
                             <td className="p-3">
-                              <span className={`px-2 py-1 rounded text-xs font-semibold ${(u.isVerified === true || u.verified === true) ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
-                                {(u.isVerified === true || u.verified === true) ? "Verified" : "Pending"}
+                              <span className={`px-2 py-1 rounded text-xs font-semibold ${u.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
+                                {u.isVerified ? "Verified" : "Pending"}
                               </span>
                             </td>
                             <td className="p-3">{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
                             <td className="p-3 flex gap-2">
                               <button
                                 onClick={() => {
-                                  // Check both isVerified and verified fields
-                                  const currentVerified = u.isVerified === true || u.verified === true
-                                  toggleVerification(u._id, !currentVerified)
+                                  // Only check isVerified for admin verification status
+                                  toggleVerification(u._id, !u.isVerified)
                                 }}
-                                className={`px-3 py-1 rounded text-white font-semibold transition ${(u.isVerified === true || u.verified === true) ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
+                                className={`px-3 py-1 rounded text-white font-semibold transition ${u.isVerified ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
                               >
-                                {(u.isVerified === true || u.verified === true) ? "Reject" : "Verify"}
+                                {u.isVerified ? "Reject" : "Verify"}
                               </button>
                               <button
                                 onClick={() => toggleAdmin(u._id, !u.isAdmin)}
