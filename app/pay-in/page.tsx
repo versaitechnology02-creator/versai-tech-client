@@ -20,6 +20,12 @@ export default function PayInPage() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
   const [message, setMessage] = useState("")
   const [generatedLink, setGeneratedLink] = useState("")
+  const [qrCodeData, setQrCodeData] = useState<{
+    id: string
+    image_url: string
+    upi_id: string
+    name: string
+  } | null>(null)
   const [isVerified, setIsVerified] = useState<boolean | null>(null)
 
   // Helper function to check if a link is a UPI payment link
@@ -181,9 +187,15 @@ export default function PayInPage() {
       }
 
       const data = await res.json()
-      console.log("[Pay-In] Backend response:", { success: data.success, final_payment_link: data.data?.final_payment_link, provider })
+      console.log("[Pay-In] Backend response:", { success: data.success, final_payment_link: data.data?.final_payment_link, qr_code: data.data?.qr_code, provider })
       
       if (data.success) {
+        // Extract QR code data if available
+        if (data.data?.qr_code) {
+          setQrCodeData(data.data.qr_code)
+        } else {
+          setQrCodeData(null)
+        }
         // CRITICAL: Only use UPI intents or official gateway hosted links
         // NEVER generate frontend URLs for payment links/QR codes
         let paymentLink = ""
@@ -359,13 +371,13 @@ export default function PayInPage() {
             <div>
               <label className="block text-sm font-medium mb-2">Select Payment Provider</label>
               <div className="grid grid-cols-2 gap-2">
-                <button
+                {/* <button
                   type="button"
                   onClick={() => setProvider("razorpay")}
                   className={`px-4 py-2 rounded-lg border ${provider === "razorpay" ? "border-primary text-primary" : "border-border"}`}
                 >
                   Razorpay
-                </button>
+                </button> */}
                 <button
                   type="button"
                   onClick={() => setProvider("smepay")}
@@ -448,8 +460,21 @@ export default function PayInPage() {
                       : `Scan to pay via ${provider.toUpperCase()}`}
                   </p>
                   <div className="bg-white p-4 rounded-md inline-block">
-                    <QRCode value={generatedLink} size={160} />
+                    {qrCodeData?.image_url ? (
+                      <img 
+                        src={qrCodeData.image_url} 
+                        alt="Payment QR Code" 
+                        className="w-40 h-40"
+                      />
+                    ) : (
+                      <QRCode value={generatedLink} size={160} />
+                    )}
                   </div>
+                  {qrCodeData && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      UPI ID: {qrCodeData.upi_id}
+                    </p>
+                  )}
                 </div>
                 <button
                   onClick={() => {
