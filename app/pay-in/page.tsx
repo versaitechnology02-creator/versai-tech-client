@@ -26,6 +26,12 @@ export default function PayInPage() {
     upi_id: string
     name: string
   } | null>(null)
+  const [orderData, setOrderData] = useState<{
+    order_id: string
+    amount: number
+    currency: string
+    key_id: string
+  } | null>(null)
   const [isVerified, setIsVerified] = useState<boolean | null>(null)
 
   // Helper function to check if a link is a UPI payment link
@@ -190,6 +196,14 @@ export default function PayInPage() {
       console.log("[Pay-In] Backend response:", { success: data.success, final_payment_link: data.data?.final_payment_link, qr_code: data.data?.qr_code, provider })
       
       if (data.success) {
+        // Store order data for Razorpay checkout
+        setOrderData({
+          order_id: data.data.order_id,
+          amount: data.data.amount,
+          currency: data.data.currency,
+          key_id: data.data.key_id,
+        })
+
         // Extract QR code data if available
         if (data.data?.qr_code) {
           setQrCodeData(data.data.qr_code)
@@ -223,15 +237,20 @@ export default function PayInPage() {
             return
           }
         } else {
-          // No payment link available
-          setStatus("error")
-          // if (provider === "razorpay") {
-          //   setMessage("Razorpay requires checkout integration. Please use SMEPay or UnPay for direct payment links and QR codes.")
-          // } else {
+          // No payment link available - check if we can do Razorpay checkout
+          if (provider === "razorpay" && data.data?.order_id && data.data?.key_id) {
+            console.log("[Pay-In] No payment link available for Razorpay, but order created - enabling checkout")
+            // For Razorpay, we can still do checkout even without payment link
+            setGeneratedLink("") // Empty link means use checkout
+            setQrCodeData(null)
+            setStatus("success")
+            setMessage("Razorpay order created! Complete payment using checkout below.")
+          } else {
+            setStatus("error")
             setMessage(`${provider ? provider.toUpperCase() : 'Payment'} link not available. Please try again or contact support.`)
-          // }
-          setLoading(false)
-          return
+            setLoading(false)
+            return
+          }
         }
         
         // Final validation: Ensure we have a valid payment link
@@ -271,9 +290,9 @@ export default function PayInPage() {
           errorMessage = "UnPay is not available in local development environment. Please use SMEPay or deploy to production."
         } else if (errorMessage.includes("wallet balance") || errorMessage.includes("auth failed")) {
           errorMessage = "Payment provider authentication failed. Please contact support."
-        }  else if (provider === "razorpay") {
+        } /* else if (provider === "razorpay") {
           errorMessage = "Razorpay requires checkout integration. Please use SMEPay for direct payment links."
-        } 
+        } */
         
         setMessage(errorMessage)
       }
@@ -424,6 +443,8 @@ export default function PayInPage() {
                   onClick={() => {
                     setStatus("idle")
                     setGeneratedLink("")
+                    setQrCodeData(null)
+                    setOrderData(null)
                     setMessage("")
                     setProvider("")
                   }}
@@ -434,58 +455,128 @@ export default function PayInPage() {
               </div>
 
               <div className="space-y-4">
-                <p className="text-muted-foreground">
-                  {isUpiLink(generatedLink)
-                    ? "Share this UPI payment link with your customer (click to open UPI app):" 
-                    : "Share this link with your customer:"}
-                </p>
-                {isUpiLink(generatedLink) ? (
-                  <a 
-                    href={generatedLink}
-                    className="bg-background border border-border rounded-lg p-4 break-all text-sm text-primary hover:underline block"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {generatedLink}
-                  </a>
-                ) : (
-                  <div className="bg-background border border-border rounded-lg p-4 break-all text-sm">
-                    {generatedLink}
-                  </div>
-                )}
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    {isUpiLink(generatedLink)
-                      ? "Scan QR code to pay directly via UPI app" 
-                      : `Scan to pay via ${provider.toUpperCase()}`}
-                  </p>
-                  <div className="bg-white p-4 rounded-md inline-block">
-                    {qrCodeData?.image_url ? (
-                      <img 
-                        src={qrCodeData.image_url} 
-                        alt="Payment QR Code" 
-                        className="w-40 h-40"
-                      />
-                    ) : (
-                      <QRCode value={generatedLink} size={160} />
-                    )}
-                  </div>
-                  {qrCodeData && (
-                    <p className="text-xs text-muted-foreground text-center">
-                      UPI ID: {qrCodeData.upi_id}
+                {generatedLink ? (
+                  <>
+                    <p className="text-muted-foreground">
+                      {isUpiLink(generatedLink)
+                        ? "Share this UPI payment link with your customer (click to open UPI app):" 
+                        : "Share this link with your customer:"}
                     </p>
-                  )}
-                </div>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(generatedLink)
-                    setMessage("Link copied to clipboard!")
-                  }}
-                  className="w-full btn-gradient py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
-                >
-                  <Copy size={20} />
-                  Copy Link
-                </button>
+                    {isUpiLink(generatedLink) ? (
+                      <a 
+                        href={generatedLink}
+                        className="bg-background border border-border rounded-lg p-4 break-all text-sm text-primary hover:underline block"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {generatedLink}
+                      </a>
+                    ) : (
+                      <div className="bg-background border border-border rounded-lg p-4 break-all text-sm">
+                        {generatedLink}
+                      </div>
+                    )}
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="text-sm text-muted-foreground">
+                        {isUpiLink(generatedLink)
+                          ? "Scan QR code to pay directly via UPI app" 
+                          : `Scan to pay via ${provider.toUpperCase()}`}
+                      </p>
+                      <div className="bg-white p-4 rounded-md inline-block">
+                        {qrCodeData?.image_url ? (
+                          <img 
+                            src={qrCodeData.image_url} 
+                            alt="Payment QR Code" 
+                            className="w-40 h-40"
+                          />
+                        ) : (
+                          <QRCode value={generatedLink} size={160} />
+                        )}
+                      </div>
+                      {qrCodeData && (
+                        <p className="text-xs text-muted-foreground text-center">
+                          UPI ID: {qrCodeData.upi_id}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(generatedLink)
+                        setMessage("Link copied to clipboard!")
+                      }}
+                      className="w-full btn-gradient py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
+                    >
+                      <Copy size={20} />
+                      Copy Link
+                    </button>
+                  </>
+                ) : provider === "razorpay" && orderData ? (
+                  <>
+                    <p className="text-muted-foreground">
+                      Complete the payment using Razorpay checkout:
+                    </p>
+                    <button
+                      onClick={async () => {
+                        // Load Razorpay checkout script
+                        if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+                          const script = document.createElement("script")
+                          script.src = "https://checkout.razorpay.com/v1/checkout.js"
+                          script.async = true
+                          document.body.appendChild(script)
+                          await new Promise(resolve => {
+                            script.onload = resolve
+                            script.onerror = () => resolve(null)
+                          })
+                        }
+
+                        if (typeof window.Razorpay !== "undefined") {
+                          const razorpay = new window.Razorpay({
+                            key: orderData.key_id,
+                            order_id: orderData.order_id,
+                            amount: orderData.amount,
+                            currency: orderData.currency,
+                            name: "Versai Technology",
+                            description: formData.description,
+                            prefill: {
+                              name: formData.customer_name,
+                              email: formData.customer_email,
+                            },
+                            handler: async (response: any) => {
+                              try {
+                                const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/verify-payment`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify(response),
+                                })
+                                const verifyData = await verifyRes.json()
+                                if (verifyData.success) {
+                                  setMessage("Payment completed successfully!")
+                                } else {
+                                  setMessage("Payment verification failed: " + verifyData.message)
+                                }
+                              } catch (err: any) {
+                                setMessage("Payment verification error: " + err.message)
+                              }
+                            },
+                            modal: {
+                              ondismiss: () => {
+                                setMessage("Payment cancelled")
+                              },
+                            },
+                          })
+                          razorpay.open()
+                        } else {
+                          setMessage("Razorpay checkout not available. Please try again.")
+                        }
+                      }}
+                      className="w-full btn-gradient py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
+                    >
+                      Complete Payment with Razorpay
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-muted-foreground">Payment setup completed. Check your email for payment instructions.</p>
+                )}
               </div>
             </div>
           )}
