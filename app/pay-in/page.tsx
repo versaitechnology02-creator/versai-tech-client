@@ -373,13 +373,13 @@ export default function PayInPage() {
                 >
                   Smepay
                 </button>
-                {/* <button
+                <button
                   type="button"
                   onClick={() => setProvider("unpay")}
                   className={`px-4 py-2 rounded-lg border ${provider === "unpay" ? "border-primary text-primary" : "border-border"}`}
                 >
                   Unpay
-                </button> */}
+                </button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Please choose one provider before creating the link.</p>
             </div>
