@@ -23,6 +23,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
   const [provider, setProvider] = useState<string>("")
   const [providerUrl, setProviderUrl] = useState<string>("")
   const [smepaySlug, setSmepaySlug] = useState<string>("")
+  const [razorpayKeyId, setRazorpayKeyId] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -51,6 +52,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
           throw new Error(data.message || "Order not found")
         }
         const txn = data.data
+        setRazorpayKeyId(txn.key_id || "")
         setFormData({
           name: txn.customer_name || "",
           email: txn.customer_email || "",
@@ -211,7 +213,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
         script.async = true
         script.onload = () => {
           const razorpay = new window.Razorpay({
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+            key: razorpayKeyId,
             order_id: orderId,
             amount: Number(formData.amount) * 100, // paise; optional when order_id present
             currency: formData.currency,
