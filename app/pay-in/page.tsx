@@ -245,6 +245,8 @@ export default function PayInPage() {
             setQrCodeData(null)
             setStatus("success")
             setMessage("Razorpay order created! Complete payment using checkout below.")
+            setLoading(false)
+            return // Exit early for Razorpay
           } else {
             setStatus("error")
             setMessage(`${provider ? provider.toUpperCase() : 'Payment'} link not available. Please try again or contact support.`)
@@ -253,8 +255,8 @@ export default function PayInPage() {
           }
         }
         
-        // Final validation: Ensure we have a valid payment link
-        if (!paymentLink || paymentLink.trim().length === 0) {
+        // Final validation: Ensure we have a valid payment link (skip for Razorpay)
+        if (provider !== "razorpay" && (!paymentLink || paymentLink.trim().length === 0)) {
           setStatus("error")
           setMessage("Failed to generate valid payment link. Please try again or contact support.")
           setLoading(false)
