@@ -359,13 +359,13 @@ export default function PayInPage() {
             <div>
               <label className="block text-sm font-medium mb-2">Select Payment Provider</label>
               <div className="grid grid-cols-2 gap-2">
-                {/* <button
+                <button
                   type="button"
                   onClick={() => setProvider("razorpay")}
                   className={`px-4 py-2 rounded-lg border ${provider === "razorpay" ? "border-primary text-primary" : "border-border"}`}
                 >
                   Razorpay
-                </button> */}
+                </button>
                 <button
                   type="button"
                   onClick={() => setProvider("smepay")}
