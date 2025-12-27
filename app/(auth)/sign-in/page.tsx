@@ -67,7 +67,7 @@ export default function SignIn() {
   }
 
   return (
-    <main className="bg-transparent text-foreground min-h-screen flex items-center justify-center">
+    <main className="bg-background text-foreground min-h-screen flex items-center justify-center">
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="w-full max-w-md bg-card border border-border rounded-xl p-8 shadow-sm">

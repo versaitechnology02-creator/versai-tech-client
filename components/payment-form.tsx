@@ -189,7 +189,8 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
             ;(window as any).smepayCheckout({
               slug: smepaySlug,
               onSuccess: () => {
-                onSuccess(orderId)
+                // Payment completion is handled via webhook - show processing message
+                onSuccess(orderId) // Temporarily keep for UX, but status will be updated via webhook
               },
               onFailure: () => {
                 onError("Payment cancelled or failed.")
