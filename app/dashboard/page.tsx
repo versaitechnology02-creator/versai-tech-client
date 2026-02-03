@@ -28,7 +28,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchTransactions()
-    const interval = setInterval(fetchTransactions, 5000)
+    const interval = setInterval(fetchTransactions, 2000)
     return () => clearInterval(interval)
   }, [])
 
