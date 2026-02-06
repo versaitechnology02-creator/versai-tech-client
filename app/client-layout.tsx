@@ -14,7 +14,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     const token = localStorage.getItem("token")
-    const isAuthPage = pathname?.includes("/sign-in") || pathname?.includes("/sign-up")
+    const isAuthPage =
+      pathname?.includes("/sign-in") ||
+      pathname?.includes("/sign-up") ||
+      pathname?.includes("/reset-password") ||
+      pathname?.includes("/reset-password-confirm")
 
     setIsLoggedIn(!!token)
 
@@ -27,7 +31,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }
   }, [pathname, router])
 
-  const isAuthPage = pathname?.includes("/sign-in") || pathname?.includes("/sign-up")
+  const isAuthPage =
+    pathname?.includes("/sign-in") ||
+    pathname?.includes("/sign-up") ||
+    pathname?.includes("/reset-password") ||
+    pathname?.includes("/reset-password-confirm")
 
   if (isLoggedIn && !isAuthPage) {
     return (

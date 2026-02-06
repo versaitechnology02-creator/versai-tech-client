@@ -107,6 +107,9 @@ export default function SignIn() {
                 className="w-full bg-background border border-border rounded-lg pl-10 pr-2 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary glow-gradient"
               />
             </div>
+            <div className="text-right mt-1">
+              <Link href="/reset-password" className="text-sm text-blue-600 hover:underline">Forgot password?</Link>
+            </div>
           </div>
 
           {/* Submit */}

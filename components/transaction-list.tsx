@@ -88,15 +88,24 @@ export default function TransactionList({ transactions, highlightedTxn }: Transa
                 txn.order_id === highlightedTxn ? "bg-primary/10" : ""
               }`}
             >
-              <td className="px-6 py-4 text-sm">{format(new Date(txn.created_at), "MMM dd, yyyy HH:mm")}</td>
+              <td className="px-6 py-4 text-sm">
+                {(() => {
+                  const date = new Date(txn.created_at);
+                  return isNaN(date.getTime())
+                    ? <span className="text-muted-foreground">Invalid date</span>
+                    : format(date, "MMM dd, yyyy HH:mm");
+                })()}
+              </td>
               <td className="px-6 py-4 text-sm">
                 <div>{txn.customer_name || "N/A"}</div>
                 <div className="text-muted-foreground">{txn.customer_email || "N/A"}</div>
               </td>
               <td className="px-6 py-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <code className="text-primary">{txn.order_id.slice(0, 12)}...</code>
-                  <button onClick={(e) => { e.stopPropagation(); copyToClipboard(txn.order_id, txn.id); }} className="hover:opacity-70 transition">
+                  <code className="text-primary">
+                    {txn.order_id ? `${txn.order_id.slice(0, 12)}...` : <span className="text-muted-foreground">N/A</span>}
+                  </code>
+                  <button onClick={(e) => { e.stopPropagation(); txn.order_id && copyToClipboard(txn.order_id, txn.id); }} className="hover:opacity-70 transition">
                     <Copy size={16} />
                   </button>
                   {copiedId === txn.id && <span className="text-xs text-secondary">Copied!</span>}
