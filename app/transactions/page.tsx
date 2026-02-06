@@ -28,15 +28,41 @@ export default function TransactionsPage() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/transactions`)
-      const data = await res.json()
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setTransactions([]);
+        setLoading(false);
+        return;
+      }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/payments/transactions`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
       if (data.success) {
-        setTransactions(data.data)
+        // Map backend fields to frontend Transaction interface
+        const mapped = (data.data || []).map((txn: any) => ({
+          id: txn._id || txn.id || '',
+          order_id: txn.orderId || txn.order_id || '',
+          payment_id: txn.paymentId || txn.payment_id || txn.razorpay_payment_id || txn.razorpayPaymentId || '',
+          amount: txn.amount,
+          currency: txn.currency,
+          status: txn.status,
+          customer_email: txn.customer?.email || txn.customer_email || '',
+          customer_name: txn.customer?.name || txn.customer_name || '',
+          created_at: txn.createdAt || txn.created_at || '',
+          updated_at: txn.updatedAt || txn.updated_at || '',
+        }));
+        setTransactions(mapped);
+      } else {
+        setTransactions([]);
       }
     } catch (error) {
-      console.error("Failed to fetch transactions:", error)
+      console.error("Failed to fetch transactions:", error);
+      setTransactions([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
