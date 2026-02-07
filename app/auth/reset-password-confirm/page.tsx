@@ -10,7 +10,6 @@ export default function ResetPasswordConfirmPage() {
     </Suspense>
   );
 }
-}
 
 function ResetPasswordConfirmContent() {
   const searchParams = useSearchParams();
