@@ -3,11 +3,13 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 
+export default function ResetPasswordConfirmPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ResetPasswordConfirmContent />
     </Suspense>
   );
+}
 }
 
 function ResetPasswordConfirmContent() {
